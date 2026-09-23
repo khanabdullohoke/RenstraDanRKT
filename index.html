@@ -593,6 +593,7 @@ let adminToken = localStorage.getItem("renstra_admin_token") || "";
 let adminName = localStorage.getItem("renstra_admin_name") || "";
 let canEdit = !!adminToken;
 let isLoading = false;
+let lastDocsSnapshot = null; // dipakai untuk menghindari render ulang DOM jika data tidak berubah
 
 const tabsEl = document.getElementById("tabs");
 const listEl = document.getElementById("list");
@@ -786,8 +787,16 @@ async function loadData(){
   if(isLoading) return;
   isLoading = true;
   try{
-    allDocs = await apiList();
-    renderAll();
+    const fresh = await apiList();
+    // Hindari membangun ulang seluruh DOM (list, chart, summary) jika data
+    // dari server persis sama dengan sebelumnya — mengurangi kerja render
+    // yang tidak perlu pada polling 20 detik tanpa mengubah hasil tampilan.
+    const snapshot = JSON.stringify(fresh);
+    if(snapshot !== lastDocsSnapshot){
+      lastDocsSnapshot = snapshot;
+      allDocs = fresh;
+      renderAll();
+    }
   }catch(err){
     console.error("Gagal memuat data:", err);
     listEl.innerHTML = `<div class="empty state-error">
@@ -1226,7 +1235,12 @@ async function init(){
     return;
   }
   await loadData();
-  setInterval(loadData, 20000); // sinkron ringan tiap 20 detik
+  // Sinkron ringan tiap 20 detik, tapi dilewati saat tab sedang tidak
+  // aktif (mis. diminimalkan / berpindah tab) untuk menghemat baterai
+  // dan kuota data pengunjung. Saat tab aktif kembali, data disegarkan
+  // seketika agar tidak menunggu siklus polling berikutnya.
+  setInterval(() => { if(!document.hidden) loadData(); }, 20000);
+  document.addEventListener("visibilitychange", () => { if(!document.hidden) loadData(); });
 }
 init();
 </script>
