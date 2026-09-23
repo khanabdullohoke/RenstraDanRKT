@@ -163,6 +163,12 @@ button{font-family:inherit;cursor:pointer;}
 .lastupdate-global{font-size:11.5px;color:var(--muted);margin:-6px 0 16px;display:flex;align-items:center;gap:6px;}
 .lastupdate-global b{color:var(--text);font-weight:700;}
 .modal-lastinfo{font-size:11px;color:var(--muted);background:var(--ice);border-radius:9px;padding:8px 10px;margin:-4px 0 14px;line-height:1.5;}
+.pct-slider-row{display:flex;align-items:center;gap:12px;}
+.pct-slider-row input[type="range"]{flex:1;accent-color:var(--gold-dark);height:6px;}
+.pct-slider-val{font-family:var(--font-display);font-weight:700;color:var(--navy);font-size:14px;min-width:44px;text-align:right;}
+:root[data-theme="dark"] .pct-slider-val{color:var(--gold-soft);}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .pct-slider-val{color:var(--gold-soft);}}
+.auto-tag{font-size:10px;font-weight:700;letter-spacing:.3px;color:var(--muted);background:var(--ice);padding:3px 9px;border-radius:20px;white-space:nowrap;}
 .info-panel{background:var(--ice);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;margin-bottom:18px;}
 .info-panel h3{margin:0 0 7px;font-family:var(--font-display);font-size:14.5px;font-weight:600;color:var(--navy);}
 :root[data-theme="dark"] .info-panel h3{color:var(--gold-soft);}
@@ -342,7 +348,8 @@ h1,h3,.card .label,.sumcard .n,.roadmap-item .ttl,.visi-ribbon .text,.site-foote
 <main>
   <div class="info-panel">
     <h3>ℹ️ Panduan Singkat</h3>
-    <p><b>Target</b> adalah tingkat capaian yang direncanakan untuk periode berjalan, sedangkan <b>Capaian</b> adalah realisasi yang sudah tercapai saat ini. Keduanya cukup dipilih dari tingkat ketercapaian (bukan mengetik angka), mengikuti skala resmi Level 1–4 EDS. Semakin dekat Capaian dengan Target, semakin baik progres pelaksanaannya.</p>
+    <p><b>Target</b> adalah tingkat capaian yang direncanakan untuk periode berjalan, sedangkan <b>Capaian</b> adalah realisasi yang sudah tercapai saat ini. Semakin dekat Capaian dengan Target, semakin baik progres pelaksanaannya.</p>
+    <p><b>Mingguan</b> diisi langsung memakai persentase penyelesaian kegiatan (0–100%), sedangkan <b>Tahunan</b> memakai skala resmi Level 1–4 EDS. <b>Bulanan</b> tidak diisi terpisah — dihitung otomatis dari rata-rata seluruh entri Mingguan pada bulan yang sama, agar datanya selalu konsisten dengan Mingguan.</p>
     <div class="legend">
       <span><span class="dot ok"></span> Tercapai — sudah sesuai atau melampaui target</span>
       <span><span class="dot warn"></span> Dalam Proses — mendekati target</span>
@@ -440,6 +447,7 @@ h1,h3,.card .label,.sumcard .n,.roadmap-item .ttl,.visi-ribbon .text,.site-foote
   </div>
   <div class="toolbar">
     <h2 id="listTitle">Progres</h2>
+    <span class="auto-tag" id="autoTag" style="display:none">⚙️ Dihitung otomatis dari Mingguan</span>
     <button class="btn gold" id="addBtn" style="display:none">+ Tambah</button>
   </div>
   <div id="list"></div>
@@ -494,22 +502,40 @@ h1,h3,.card .label,.sumcard .n,.roadmap-item .ttl,.visi-ribbon .text,.site-foote
       <label for="f_type">Tipe Periode</label>
       <select id="f_type" name="f_type">
         <option value="weekly">Mingguan</option>
-        <option value="monthly">Bulanan</option>
         <option value="yearly">Tahunan</option>
       </select>
+      <div class="sub-hint">Bulanan tidak dipilih di sini — dihitung otomatis dari rata-rata seluruh entri Mingguan pada bulan yang sama.</div>
     </div>
     <div class="field" id="f_label_field">
       <label for="f_label">Label Periode (mis. "Minggu 3 — Juni 2025")<span class="req-mark">*</span></label>
       <input id="f_label" name="f_label" type="text" maxlength="80" required aria-required="true" aria-describedby="f_label_error" placeholder="Minggu 3 — Juni 2025">
       <div class="field-error" id="f_label_error" role="alert">Label periode wajib diisi.</div>
     </div>
+    <div class="field" id="f_period_date_field">
+      <label for="f_period_date">Tanggal Minggu Ini<span class="req-mark">*</span></label>
+      <input id="f_period_date" name="f_period_date" type="date" aria-describedby="f_period_date_error">
+      <div class="sub-hint">Dipakai untuk mengelompokkan entri ini ke Bulanan yang sesuai secara otomatis.</div>
+      <div class="field-error" id="f_period_date_error" role="alert">Tanggal minggu wajib diisi.</div>
+    </div>
     <div class="field">
       <div class="field-label" id="f_target_label">Target Periode Ini</div>
+      <div id="f_target_pct_wrap" style="display:none">
+        <div class="pct-slider-row">
+          <input type="range" id="f_target_pct" min="0" max="100" step="5" value="100">
+          <span class="pct-slider-val" id="f_target_pct_val">100%</span>
+        </div>
+      </div>
       <div class="choice-row" id="f_target_row" role="radiogroup" aria-labelledby="f_target_label" aria-describedby="f_target_hint"></div>
       <div class="sub-hint" id="f_target_hint">Pilih tingkat capaian yang direncanakan untuk periode ini.</div>
     </div>
     <div class="field">
       <div class="field-label" id="f_achieved_label">Capaian Saat Ini</div>
+      <div id="f_achieved_pct_wrap" style="display:none">
+        <div class="pct-slider-row">
+          <input type="range" id="f_achieved_pct" min="0" max="100" step="5" value="0">
+          <span class="pct-slider-val" id="f_achieved_pct_val">0%</span>
+        </div>
+      </div>
       <div class="choice-row" id="f_achieved_row" role="radiogroup" aria-labelledby="f_achieved_label" aria-describedby="f_achieved_hint"></div>
       <div class="sub-hint" id="f_achieved_hint">Pilih tingkat capaian sesuai skala Level 1–4 EDS yang benar-benar sudah terealisasi.</div>
     </div>
@@ -693,6 +719,52 @@ function getChoiceValue(inputName){
   return el ? Number(el.value) : 0;
 }
 
+// ====== SLIDER % BEBAS (khusus input Mingguan — instrumen % penyelesaian kegiatan) ======
+function wireSlider(sliderId, valId){
+  const slider = document.getElementById(sliderId);
+  const val = document.getElementById(valId);
+  const update = () => { val.textContent = slider.value + "%"; };
+  slider.addEventListener("input", update);
+  update();
+}
+function setSlider(sliderId, valId, v){
+  const slider = document.getElementById(sliderId);
+  slider.value = Math.max(0, Math.min(100, Math.round((Number(v)||0)/5)*5));
+  document.getElementById(valId).textContent = slider.value + "%";
+}
+wireSlider("f_target_pct", "f_target_pct_val");
+wireSlider("f_achieved_pct", "f_achieved_pct_val");
+
+// ====== AGREGASI BULANAN OTOMATIS DARI DATA MINGGUAN ======
+// Bulanan TIDAK punya data tersendiri — dihitung langsung dari rata-rata
+// seluruh entri Mingguan (type === "weekly") yang tanggalnya (periodDate)
+// jatuh pada bulan yang sama. Ini memastikan satu sumber data (single
+// source of truth) dan mencegah angka Bulanan bertentangan dengan Mingguan.
+const MONTH_NAMES = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+function computeMonthlyAggregates(){
+  const weekly = allDocs.filter(d => d.type === "weekly" && d.periodDate);
+  const byMonth = {};
+  weekly.forEach(d => {
+    const dt = new Date(d.periodDate + "T00:00:00");
+    if(isNaN(dt.getTime())) return;
+    const key = dt.getFullYear() + "-" + String(dt.getMonth()+1).padStart(2,"0");
+    if(!byMonth[key]) byMonth[key] = { key, year: dt.getFullYear(), month: dt.getMonth(), items: [] };
+    byMonth[key].items.push(d);
+  });
+  return Object.values(byMonth).map(m => {
+    const n = m.items.length;
+    const avgAchieved = Math.round(m.items.reduce((s,d)=>s+(Number(d.achieved)||0),0)/n);
+    const avgTarget = Math.round(m.items.reduce((s,d)=>s+(Number(d.target)||0),0)/n);
+    const updatedAt = m.items.reduce((mx,d)=>Math.max(mx, Number(d.updatedAt)||0),0);
+    return {
+      key: m.key,
+      label: MONTH_NAMES[m.month] + " " + m.year,
+      avgAchieved, avgTarget, count: n, updatedAt,
+      items: m.items.slice().sort((a,b)=>(a.periodDate||"").localeCompare(b.periodDate||"")),
+    };
+  }).sort((a,b) => b.key.localeCompare(a.key)); // bulan terbaru dahulu
+}
+
 // ====== KOMUNIKASI DENGAN SERVER DATA ======
 async function apiList(){
   const res = await fetch(API_URL + "?action=list", { method: "GET" });
@@ -752,20 +824,35 @@ function renderTabs(){
   });
 }
 
+function sumCard(avg, label, sub){
+  const c = document.createElement("div");
+  c.className = "sumcard";
+  c.innerHTML = `<div class="n">${avg}%</div><div class="l">${label}<br>${sub}</div>`;
+  return c;
+}
+
 function renderSummary(){
   summaryEl.innerHTML = "";
-  Object.entries(TYPE_LABEL).forEach(([key, label]) => {
-    const docs = allDocs.filter(d => d.type === key);
-    const avg = docs.length ? Math.round(docs.reduce((s,d)=>s+(Number(d.achieved)||0),0)/docs.length) : 0;
-    const c = document.createElement("div");
-    c.className = "sumcard";
-    c.innerHTML = `<div class="n">${avg}%</div><div class="l">Rata-rata Capaian ${label}<br>${docs.length} periode tercatat &nbsp;•&nbsp; ${edsScoreLabel(avg)}</div>`;
-    summaryEl.appendChild(c);
-  });
+
+  const weeklyDocs = allDocs.filter(d => d.type === "weekly");
+  const weeklyAvg = weeklyDocs.length ? Math.round(weeklyDocs.reduce((s,d)=>s+(Number(d.achieved)||0),0)/weeklyDocs.length) : 0;
+  summaryEl.appendChild(sumCard(weeklyAvg, "Rata-rata Capaian Mingguan", `${weeklyDocs.length} entri tercatat`));
+
+  const monthlyAggs = computeMonthlyAggregates();
+  const monthlyAvg = monthlyAggs.length ? Math.round(monthlyAggs.reduce((s,m)=>s+m.avgAchieved,0)/monthlyAggs.length) : 0;
+  summaryEl.appendChild(sumCard(monthlyAvg, "Rata-rata Capaian Bulanan", `${monthlyAggs.length} bulan terhitung • otomatis dari Mingguan`));
+
+  const yearlyDocs = allDocs.filter(d => d.type === "yearly");
+  const yearlyAvg = yearlyDocs.length ? Math.round(yearlyDocs.reduce((s,d)=>s+(Number(d.achieved)||0),0)/yearlyDocs.length) : 0;
+  summaryEl.appendChild(sumCard(yearlyAvg, "Rata-rata Capaian Tahunan", `${yearlyDocs.length} entri tercatat • ${edsScoreLabel(yearlyAvg)}`));
+
   const hsEl = document.getElementById("hsAvgPct");
   if (hsEl){
-    hsEl.textContent = allDocs.length
-      ? Math.round(allDocs.reduce((s,d)=>s+(Number(d.achieved)||0),0)/allDocs.length) + "%"
+    // Ring header memakai gabungan Mingguan+Tahunan (sumber data asli),
+    // tidak menghitung ulang Bulanan agar tidak menghitung dua kali.
+    const base = allDocs.filter(d => d.type === "weekly" || d.type === "yearly");
+    hsEl.textContent = base.length
+      ? Math.round(base.reduce((s,d)=>s+(Number(d.achieved)||0),0)/base.length) + "%"
       : "\u2013%";
   }
   const lastEl = document.getElementById("lastUpdateGlobal");
@@ -780,11 +867,28 @@ function renderSummary(){
   }
 }
 
+function updateToolbarUI(){
+  const isMonthly = activeType === "monthly";
+  addBtn.style.display = (canEdit && !isMonthly) ? "inline-block" : "none";
+  const autoTag = document.getElementById("autoTag");
+  if(autoTag) autoTag.style.display = isMonthly ? "inline-flex" : "none";
+}
+
+function formatDateOnly(iso){
+  if(!iso) return "";
+  try{
+    return new Intl.DateTimeFormat("id-ID", { dateStyle: "medium" }).format(new Date(iso + "T00:00:00"));
+  }catch(e){ return iso; }
+}
+
 function renderList(){
   listTitleEl.textContent = "Rincian Progres " + TYPE_LABEL[activeType];
+  updateToolbarUI();
+  listEl.innerHTML = "";
+  if(activeType === "monthly"){ renderMonthlyList(); return; }
+
   const docs = allDocs.filter(d => d.type === activeType)
     .sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
-  listEl.innerHTML = "";
   if(!docs.length){
     listEl.innerHTML = `<div class="empty">Belum ada data untuk periode ${TYPE_LABEL[activeType].toLowerCase()}.${canEdit ? " Klik \u201c+ Tambah\u201d untuk mencatat progres pertama." : " Data akan tampil setelah admin menambahkannya."}</div>`;
     return;
@@ -794,6 +898,11 @@ function renderList(){
     const target = Math.max(0, Math.min(100, Number(d.target)||0));
     const st = statusOf(pct, target);
     const evidHref = safeUrl(d.evidenceUrl);
+    // Skor EDS Level 1-4 hanya relevan untuk Tahunan — instrumen resmi
+    // asesmen tahunan. Mingguan pakai instrumen % penyelesaian kegiatan,
+    // sehingga tidak direkonsiliasi ke skala EDS di sini.
+    const scoreLine = d.type === "yearly" ? ` &nbsp;•&nbsp; <span class="eds-score">${edsScoreLabel(pct)}</span>` : "";
+    const dateLine = d.periodDate ? ` &nbsp;•&nbsp; ${escapeHtml(formatDateOnly(d.periodDate))}` : "";
     const card = document.createElement("div");
     card.className = "card";
     card.innerHTML = `
@@ -803,7 +912,7 @@ function renderList(){
       </div>
       <div class="bar"><div style="width:${pct}%"></div></div>
       <div class="meta">
-        <span>Target: ${target}% &nbsp;•&nbsp; Capaian: ${pct}% &nbsp;•&nbsp; <span class="eds-score">${edsScoreLabel(pct)}</span></span>
+        <span>Target: ${target}% &nbsp;•&nbsp; Capaian: ${pct}%${scoreLine}${dateLine}</span>
         <span style="display:flex;gap:6px;flex-wrap:wrap;">
           <span class="status ${st.cls}">${st.text}</span>
           <span class="badge">${TYPE_LABEL[d.type]}</span>
@@ -827,6 +936,37 @@ function renderList(){
   });
 }
 
+function renderMonthlyList(){
+  const aggs = computeMonthlyAggregates();
+  if(!aggs.length){
+    listEl.innerHTML = `<div class="empty">Belum ada data Bulanan. Bulanan dihitung otomatis begitu ada entri Mingguan dengan "Tanggal Minggu Ini" terisi.</div>`;
+    return;
+  }
+  aggs.forEach(m => {
+    const st = statusOf(m.avgAchieved, m.avgTarget);
+    const itemLabels = m.items.map(i => escapeHtml(i.label || i.periodDate)).join(", ");
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="top">
+        <div class="label">${escapeHtml(m.label)}</div>
+        <div class="pct">${m.avgAchieved}%</div>
+      </div>
+      <div class="bar"><div style="width:${m.avgAchieved}%"></div></div>
+      <div class="meta">
+        <span>Target rata-rata: ${m.avgTarget}% &nbsp;•&nbsp; Capaian rata-rata: ${m.avgAchieved}%</span>
+        <span style="display:flex;gap:6px;flex-wrap:wrap;">
+          <span class="status ${st.cls}">${st.text}</span>
+          <span class="badge">${m.count} entri Mingguan</span>
+        </span>
+      </div>
+      <div class="note">📊 Dihitung otomatis dari entri Mingguan: ${itemLabels}</div>
+      ${m.updatedAt ? `<div class="updated-line">🕒 Entri mingguan terakhir diperbarui: ${escapeHtml(formatDateTime(m.updatedAt))}</div>` : ""}
+    `;
+    listEl.appendChild(card);
+  });
+}
+
 function escapeHtml(s){
   return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 }
@@ -835,19 +975,29 @@ function renderTrend(){
   const box = document.getElementById("trendbox");
   const svg = document.getElementById("trendSvg");
   const sub = document.getElementById("trendSub");
-  const docs = allDocs.filter(d => d.type === activeType)
-    .sort((a,b) => (a.createdAt||0) - (b.createdAt||0));
-  if(docs.length < 2){ box.style.display = "none"; svg.innerHTML = ""; return; }
+
+  let series; // [{label, achieved}]
+  if(activeType === "monthly"){
+    series = computeMonthlyAggregates()
+      .slice().sort((a,b) => a.key.localeCompare(b.key))
+      .map(m => ({ label: m.label, achieved: m.avgAchieved }));
+  } else {
+    series = allDocs.filter(d => d.type === activeType)
+      .sort((a,b) => (a.createdAt||0) - (b.createdAt||0))
+      .map(d => ({ label: d.label||"", achieved: d.achieved }));
+  }
+
+  if(series.length < 2){ box.style.display = "none"; svg.innerHTML = ""; return; }
   box.style.display = "block";
-  sub.textContent = `Perkembangan capaian ${TYPE_LABEL[activeType].toLowerCase()} dari periode terlama ke terbaru (${docs.length} periode).`;
+  sub.textContent = `Perkembangan capaian ${TYPE_LABEL[activeType].toLowerCase()} dari periode terlama ke terbaru (${series.length} periode).`;
   const W = 300, H = 90, pad = 8;
-  const stepX = (W - pad*2) / (docs.length - 1);
+  const stepX = (W - pad*2) / (series.length - 1);
   const yOf = (v) => H - pad - ( (Math.max(0,Math.min(100,Number(v)||0))/100) * (H - pad*2) );
-  const pts = docs.map((d,i) => [pad + i*stepX, yOf(d.achieved)]);
+  const pts = series.map((d,i) => [pad + i*stepX, yOf(d.achieved)]);
   const line = pts.map(p => p.join(",")).join(" ");
-  const area = `${pad},${H-pad} ${line} ${pad+(docs.length-1)*stepX},${H-pad}`;
+  const area = `${pad},${H-pad} ${line} ${pad+(series.length-1)*stepX},${H-pad}`;
   const dots = pts.map((p,i) => {
-    const d = docs[i];
+    const d = series[i];
     return `<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="#D9A33D"><title>${escapeHtml(d.label||"")}: ${Math.round(Number(d.achieved)||0)}%</title></circle>`;
   }).join("");
   svg.innerHTML = `
@@ -859,13 +1009,15 @@ function renderTrend(){
 
 const FAQ_ITEMS = [
   ["Apa fungsi dashboard ini?", "Dashboard ini digunakan untuk memantau capaian pelaksanaan Renstra (Rencana Strategis 4 Tahun) dan RKT (Rencana Kerja Tahunan) SMKS Ciledug Al Musaddadiyah Garut, ditinjau secara Mingguan, Bulanan, dan Tahunan."],
-  ["Apa perbedaan Target dan Capaian?", "Target adalah persentase yang direncanakan untuk periode tersebut. Capaian adalah persentase yang sudah benar-benar terealisasi. Jika Capaian menyamai atau melampaui Target, pelaksanaan program dinyatakan sesuai rencana."],
+  ["Bagaimana hubungan data Mingguan, Bulanan, dan Tahunan?", "Mingguan adalah satu-satunya data yang diinput langsung oleh admin. Bulanan TIDAK diinput terpisah — dihitung otomatis sebagai rata-rata seluruh entri Mingguan pada bulan yang sama, berdasarkan \"Tanggal Minggu Ini\" pada setiap entri. Tahunan diinput terpisah oleh admin karena merepresentasikan hasil Evaluasi Diri Sekolah (EDS) resmi, bukan rata-rata dari Mingguan/Bulanan."],
+  ["Mengapa skala Mingguan berbeda dengan Tahunan?", "Mingguan mengukur % penyelesaian kegiatan/program kerja terhadap rencana (instrumen operasional RKT), sehingga wajar berubah tiap minggu. Tahunan mengukur skor EDS Level 1–4 terhadap 8 SNP, yaitu instrumen asesmen resmi yang dinilai secara berkala (semester/tahunan), bukan mingguan. Keduanya sengaja dipisah agar tidak saling mencampur instrumen pengukuran."],
+  ["Apa perbedaan Target dan Capaian?", "Target adalah tingkat yang direncanakan untuk periode tersebut. Capaian adalah realisasi yang sudah benar-benar terjadi. Jika Capaian menyamai atau melampaui Target, pelaksanaan program dinyatakan sesuai rencana."],
   ["Apa arti status Tercapai, Dalam Proses, dan Perlu Perhatian?", "Tercapai berarti Capaian sudah menyamai atau melampaui Target. Dalam Proses berarti Capaian sudah mendekati Target (70% ke atas) namun belum tuntas. Perlu Perhatian berarti Capaian masih jauh di bawah Target dan memerlukan tindak lanjut segera."],
-  ["Siapa yang berwenang mengubah data?", "Hanya pihak yang memegang Token Admin (mis. Kepala Sekolah atau Tim Penjamin Mutu Internal/TPMI) yang dapat menambah, mengubah, atau menghapus data melalui tombol \"Masuk Admin\". Pengunjung lain hanya dapat melihat dan memantau."],
+  ["Siapa yang berwenang mengubah data?", "Hanya pihak yang memegang Token Admin (mis. Kepala Sekolah atau Tim Penjamin Mutu Internal/TPMI) yang dapat menambah, mengubah, atau menghapus data Mingguan dan Tahunan melalui tombol \"Masuk Admin\". Data Bulanan tidak dapat diedit langsung karena sifatnya hasil hitungan otomatis. Pengunjung lain hanya dapat melihat dan memantau."],
   ["Seberapa cepat data diperbarui?", "Data tersimpan secara aman di server terpusat sekolah. Perubahan tersimpan langsung, dan halaman menyegarkan data secara otomatis setiap 20 detik agar pengunjung lain turut melihat pembaruan terbaru."],
   ["Apa itu EDS, Renstra, RKT, dan SNP?", "EDS (Evaluasi Diri Sekolah) adalah proses pengukuran kondisi sekolah berdasarkan 8 Standar Nasional Pendidikan (SNP). Hasil EDS menjadi dasar penyusunan Renstra (rencana 4 tahun), yang selanjutnya diturunkan menjadi RKT (rencana kerja 1 tahun berjalan)."],
   ["Bagaimana cara melihat progres per minggu, bulan, atau tahun?", "Gunakan tiga tab pada bagian atas halaman (Mingguan, Bulanan, Tahunan). Setiap tab menampilkan ringkasan rata-rata, grafik tren, dan rincian entri untuk periode yang dipilih."],
-  ["Mengapa suatu periode belum menampilkan data?", "Artinya admin belum menambahkan entri untuk periode tersebut. Data akan tampil segera setelah admin memasukkannya melalui tombol \"+ Tambah\"."],
+  ["Mengapa suatu periode belum menampilkan data?", "Untuk Mingguan dan Tahunan, artinya admin belum menambahkan entri untuk periode tersebut. Untuk Bulanan, artinya belum ada entri Mingguan dengan \"Tanggal Minggu Ini\" yang jatuh pada bulan tersebut."],
 ];
 
 function renderFaq(){
@@ -889,15 +1041,47 @@ function setLabelInvalid(isInvalid){
   labelInput.setAttribute("aria-invalid", isInvalid ? "true" : "false");
 }
 
+function todayIso(){ return new Date().toISOString().slice(0,10); }
+
+// Menampilkan mode input yang sesuai instrumennya: Mingguan pakai slider
+// % bebas (instrumen % penyelesaian kegiatan RKT), Tahunan pakai pilihan
+// Level EDS 1-4 (instrumen asesmen resmi). Keduanya TIDAK saling ditukar
+// dalam satu entri agar skala pengukuran tidak tercampur.
+function applyTypeMode(type, doc){
+  const isWeekly = type === "weekly";
+  document.getElementById("f_period_date_field").style.display = isWeekly ? "block" : "none";
+  document.getElementById("f_period_date_field").classList.remove("invalid");
+  document.getElementById("f_target_pct_wrap").style.display = isWeekly ? "block" : "none";
+  document.getElementById("f_target_row").style.display = isWeekly ? "none" : "flex";
+  document.getElementById("f_achieved_pct_wrap").style.display = isWeekly ? "block" : "none";
+  document.getElementById("f_achieved_row").style.display = isWeekly ? "none" : "flex";
+  document.getElementById("f_target_hint").textContent = isWeekly
+    ? "Geser untuk menentukan persentase target penyelesaian kegiatan minggu ini."
+    : "Pilih tingkat capaian yang direncanakan untuk periode ini.";
+  document.getElementById("f_achieved_hint").textContent = isWeekly
+    ? "Geser sesuai persentase kegiatan yang benar-benar sudah terselesaikan."
+    : "Pilih tingkat capaian sesuai skala Level 1–4 EDS yang benar-benar sudah terealisasi.";
+  if(isWeekly){
+    setSlider("f_target_pct", "f_target_pct_val", doc ? (doc.target ?? 100) : 100);
+    setSlider("f_achieved_pct", "f_achieved_pct_val", doc ? (doc.achieved ?? 0) : 0);
+  } else {
+    renderChoiceRow("f_target_row", "f_target", doc ? (doc.target ?? 100) : 100);
+    renderChoiceRow("f_achieved_row", "f_achieved", doc ? (doc.achieved ?? 0) : 0);
+  }
+  document.getElementById("f_period_date").value = doc && doc.periodDate ? doc.periodDate : (isWeekly ? todayIso() : "");
+}
+
 function openModal(doc){
   editingId = doc ? doc.id : null;
   renderSnpOptions();
   document.getElementById("modalTitle").textContent = doc ? "Ubah Progres" : "Tambah Progres";
-  document.getElementById("f_type").value = doc ? doc.type : activeType;
+  const typeSel = document.getElementById("f_type");
+  const type = doc ? doc.type : (activeType === "monthly" ? "weekly" : activeType);
+  typeSel.value = type;
+  typeSel.disabled = !!doc; // cegah ganti tipe saat mengubah data — skala & instrumennya berbeda
   document.getElementById("f_label").value = doc ? (doc.label||"") : "";
   setLabelInvalid(false);
-  renderChoiceRow("f_target_row", "f_target", doc ? (doc.target ?? 100) : 100);
-  renderChoiceRow("f_achieved_row", "f_achieved", doc ? (doc.achieved ?? 0) : 0);
+  applyTypeMode(type, doc);
   document.getElementById("f_snp").value = doc ? (doc.snp||"") : "";
   document.getElementById("f_note").value = doc ? (doc.note||"") : "";
   document.getElementById("f_evidence").value = doc ? (doc.evidenceUrl||"") : "";
@@ -919,6 +1103,7 @@ function closeModal(){ overlay.style.display = "none"; editingId = null; }
 document.getElementById("addBtn").onclick = () => openModal(null);
 document.getElementById("cancelBtn").onclick = closeModal;
 overlay.addEventListener("click", (e) => { if(e.target === overlay) closeModal(); });
+document.getElementById("f_type").addEventListener("change", (e) => applyTypeMode(e.target.value, null));
 
 document.getElementById("f_label").addEventListener("input", () => setLabelInvalid(false));
 document.getElementById("f_label").addEventListener("keydown", (e) => {
@@ -926,16 +1111,20 @@ document.getElementById("f_label").addEventListener("keydown", (e) => {
 });
 
 document.getElementById("saveBtn").onclick = async () => {
+  const type = document.getElementById("f_type").value;
+  const isWeekly = type === "weekly";
   const evidenceRaw = document.getElementById("f_evidence").value.trim();
+  const periodDate = document.getElementById("f_period_date").value;
   const data = {
-    type: document.getElementById("f_type").value,
+    type,
     label: document.getElementById("f_label").value.trim(),
-    target: getChoiceValue("f_target"),
-    achieved: getChoiceValue("f_achieved"),
+    target: isWeekly ? (Number(document.getElementById("f_target_pct").value)||0) : getChoiceValue("f_target"),
+    achieved: isWeekly ? (Number(document.getElementById("f_achieved_pct").value)||0) : getChoiceValue("f_achieved"),
     snp: document.getElementById("f_snp").value,
     note: document.getElementById("f_note").value.trim(),
     evidenceUrl: evidenceRaw,
     editedBy: adminName || "Admin",
+    periodDate: isWeekly ? periodDate : "",
   };
   if(!data.label){
     setLabelInvalid(true);
@@ -944,6 +1133,14 @@ document.getElementById("saveBtn").onclick = async () => {
     labelField.scrollIntoView({ behavior: "smooth", block: "center" });
     return;
   }
+  const dateField = document.getElementById("f_period_date_field");
+  if(isWeekly && !periodDate){
+    dateField.classList.add("invalid");
+    document.getElementById("f_period_date").focus();
+    dateField.scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+  dateField.classList.remove("invalid");
   const evidField = document.getElementById("f_evidence_field");
   if(evidenceRaw && !safeUrl(evidenceRaw)){
     evidField.classList.add("invalid");
@@ -978,7 +1175,7 @@ document.getElementById("deleteBtn").onclick = async () => {
 
 // ====== LOGIN / LOGOUT ADMIN (token disimpan lokal di browser) ======
 function updateAdminUI(){
-  addBtn.style.display = canEdit ? "inline-block" : "none";
+  updateToolbarUI();
   const btn = document.getElementById("adminBtn");
   if(btn) btn.textContent = canEdit ? "keluar dari mode admin" : "masuk sebagai admin";
 }
