@@ -155,6 +155,35 @@ button{font-family:inherit;cursor:pointer;}
 :root[data-theme="dark"] .snpbadge{background:rgba(217,163,61,.14);color:var(--gold-soft);}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .snpbadge{background:rgba(217,163,61,.14);color:var(--gold-soft);}}
 .eds-score{font-size:11px;color:var(--muted);}
+.progbadge{font-size:10.5px;padding:2px 9px;border-radius:20px;background:rgba(90,100,128,.12);color:var(--slate);font-weight:700;white-space:nowrap;}
+:root[data-theme="dark"] .progbadge{background:rgba(148,161,199,.14);color:#C7D1E8;}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .progbadge{background:rgba(148,161,199,.14);color:#C7D1E8;}}
+.yearbadge{font-size:10.5px;padding:2px 9px;border-radius:20px;background:var(--ice);color:var(--muted);font-weight:600;white-space:nowrap;}
+.verifybadge{font-size:10.5px;font-weight:700;padding:3px 10px 3px 8px;border-radius:20px;white-space:nowrap;display:inline-flex;align-items:center;gap:4px;}
+.verifybadge.yes{background:rgba(21,157,108,.14);color:var(--ok);}
+.verifybadge.no{background:rgba(217,163,61,.16);color:#8A6A1E;}
+:root[data-theme="dark"] .verifybadge.no{color:#E4C878;}
+.budget-line{font-size:12px;color:var(--muted);margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);display:flex;flex-wrap:wrap;gap:4px 14px;}
+.budget-line b{color:var(--text);}
+.history-box{margin-top:9px;}
+.history-box summary{font-size:11.5px;color:var(--muted);cursor:pointer;font-weight:600;list-style:none;}
+.history-box summary::-webkit-details-marker{display:none;}
+.history-box summary::before{content:"▸ ";}
+.history-box[open] summary::before{content:"▾ ";}
+.history-list{margin:8px 0 0;padding:0 0 0 14px;border-left:2px solid var(--line);}
+.history-item{font-size:11.5px;color:var(--muted);line-height:1.6;padding-bottom:9px;position:relative;}
+.history-item:last-child{padding-bottom:0;}
+.history-item .h-when{color:var(--text);font-weight:600;}
+.toolbar-filters{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.year-select{font-family:inherit;font-size:12px;font-weight:600;padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text);}
+.fieldset-box{border:1px dashed var(--line);border-radius:11px;padding:12px 13px;margin-bottom:13px;}
+.fieldset-box > .fs-title{font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px;}
+.field-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.checkbox-field{display:flex;align-items:flex-start;gap:9px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);cursor:pointer;}
+.checkbox-field input{margin-top:2px;flex:none;}
+.checkbox-field .cf-label{font-size:12.8px;font-weight:600;color:var(--text);}
+.checkbox-field .cf-sub{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4;}
+.modal-history{background:var(--ice);border-radius:9px;padding:10px 12px;margin:-4px 0 14px;max-height:150px;overflow:auto;}
 .evid-link{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--navy);font-weight:600;text-decoration:none;margin-top:9px;}
 :root[data-theme="dark"] .evid-link{color:var(--gold-soft);}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .evid-link{color:var(--gold-soft);}}
@@ -349,7 +378,8 @@ h1,h3,.card .label,.sumcard .n,.roadmap-item .ttl,.visi-ribbon .text,.site-foote
   <div class="info-panel">
     <h3>ℹ️ Panduan Singkat</h3>
     <p><b>Target</b> adalah tingkat capaian yang direncanakan untuk periode berjalan, sedangkan <b>Capaian</b> adalah realisasi yang sudah tercapai saat ini. Semakin dekat Capaian dengan Target, semakin baik progres pelaksanaannya.</p>
-    <p><b>Mingguan</b> diisi langsung memakai persentase penyelesaian kegiatan (0–100%), sedangkan <b>Tahunan</b> memakai skala resmi Level 1–4 EDS. <b>Bulanan</b> tidak diisi terpisah — dihitung otomatis dari rata-rata seluruh entri Mingguan pada bulan yang sama, agar datanya selalu konsisten dengan Mingguan.</p>
+    <p><b>Mingguan</b> diisi langsung memakai persentase penyelesaian kegiatan (0–100%) dan wajib dikaitkan ke salah satu <b>Program RKT resmi</b>, sedangkan <b>Tahunan</b> memakai skala resmi Level 1–4 EDS. <b>Bulanan</b> tidak diisi terpisah — dihitung otomatis dari rata-rata seluruh entri Mingguan pada bulan yang sama, agar datanya selalu konsisten dengan Mingguan.</p>
+    <p>Status <b>Tercapai/Dalam Proses/Perlu Perhatian</b> dihitung otomatis dari Target vs Capaian yang diisi admin, sedangkan status <b>✔ Terverifikasi / ⏳ Menunggu Verifikasi</b> terpisah dan hanya berubah setelah bukti pendukung ditinjau — sehingga capaian yang dilaporkan tidak otomatis dianggap sah tanpa peninjauan.</p>
     <div class="legend">
       <span><span class="dot ok"></span> Tercapai — sudah sesuai atau melampaui target</span>
       <span><span class="dot warn"></span> Dalam Proses — mendekati target</span>
@@ -447,8 +477,13 @@ h1,h3,.card .label,.sumcard .n,.roadmap-item .ttl,.visi-ribbon .text,.site-foote
   </div>
   <div class="toolbar">
     <h2 id="listTitle">Progres</h2>
-    <span class="auto-tag" id="autoTag" style="display:none">⚙️ Dihitung otomatis dari Mingguan</span>
-    <button class="btn gold" id="addBtn" style="display:none">+ Tambah</button>
+    <div class="toolbar-filters">
+      <select class="year-select" id="yearFilter" aria-label="Filter Tahun Ajaran">
+        <option value="">Semua Tahun Ajaran</option>
+      </select>
+      <span class="auto-tag" id="autoTag" style="display:none">⚙️ Dihitung otomatis dari Mingguan</span>
+      <button class="btn gold" id="addBtn" style="display:none">+ Tambah</button>
+    </div>
   </div>
   <div id="list"></div>
 
@@ -498,6 +533,10 @@ h1,h3,.card .label,.sumcard .n,.roadmap-item .ttl,.visi-ribbon .text,.site-foote
   <div class="modal">
     <h3 id="modalTitle">Tambah Progres</h3>
     <div class="modal-lastinfo" id="modalLastInfo" style="display:none"></div>
+    <details class="history-box" id="modalHistoryBox" style="display:none">
+      <summary>Riwayat Perubahan Entri Ini</summary>
+      <div class="modal-history" id="modalHistoryList"></div>
+    </details>
     <div class="field">
       <label for="f_type">Tipe Periode</label>
       <select id="f_type" name="f_type">
@@ -506,16 +545,32 @@ h1,h3,.card .label,.sumcard .n,.roadmap-item .ttl,.visi-ribbon .text,.site-foote
       </select>
       <div class="sub-hint">Bulanan tidak dipilih di sini — dihitung otomatis dari rata-rata seluruh entri Mingguan pada bulan yang sama.</div>
     </div>
+    <div class="field" id="f_program_field">
+      <label for="f_program">Program RKT Resmi<span class="req-mark">*</span></label>
+      <select id="f_program" name="f_program" aria-describedby="f_program_error"></select>
+      <div class="sub-hint">Setiap entri Mingguan wajib dikaitkan ke salah satu Program RKT resmi, bukan teks bebas, agar progres per program dapat dipantau konsisten.</div>
+      <div class="field-error" id="f_program_error" role="alert">Program RKT wajib dipilih.</div>
+    </div>
+    <div class="field" id="f_program_custom_field" style="display:none">
+      <label for="f_program_custom">Nama Program Khusus<span class="req-mark">*</span></label>
+      <input id="f_program_custom" name="f_program_custom" type="text" maxlength="120" aria-describedby="f_program_custom_error" placeholder="Nama program yang belum ada di daftar resmi">
+      <div class="field-error" id="f_program_custom_error" role="alert">Nama program khusus wajib diisi.</div>
+    </div>
     <div class="field" id="f_label_field">
-      <label for="f_label">Label Periode (mis. "Minggu 3 — Juni 2025")<span class="req-mark">*</span></label>
+      <label for="f_label" id="f_label_label">Label Periode (mis. "Minggu 3 — Juni 2025")<span class="req-mark">*</span></label>
       <input id="f_label" name="f_label" type="text" maxlength="80" required aria-required="true" aria-describedby="f_label_error" placeholder="Minggu 3 — Juni 2025">
       <div class="field-error" id="f_label_error" role="alert">Label periode wajib diisi.</div>
     </div>
     <div class="field" id="f_period_date_field">
       <label for="f_period_date">Tanggal Minggu Ini<span class="req-mark">*</span></label>
       <input id="f_period_date" name="f_period_date" type="date" aria-describedby="f_period_date_error">
-      <div class="sub-hint">Dipakai untuk mengelompokkan entri ini ke Bulanan yang sesuai secara otomatis.</div>
+      <div class="sub-hint" id="f_period_date_hint">Dipakai untuk mengelompokkan entri ini ke Bulanan yang sesuai, dan menentukan Tahun Ajaran secara otomatis.</div>
       <div class="field-error" id="f_period_date_error" role="alert">Tanggal minggu wajib diisi.</div>
+    </div>
+    <div class="field" id="f_schoolyear_field" style="display:none">
+      <label for="f_schoolyear">Tahun Ajaran<span class="req-mark">*</span></label>
+      <select id="f_schoolyear" name="f_schoolyear"></select>
+      <div class="sub-hint">Dipakai untuk memfilter data lintas tahun agar tidak tercampur.</div>
     </div>
     <div class="field">
       <div class="field-label" id="f_target_label">Target Periode Ini</div>
@@ -552,6 +607,27 @@ h1,h3,.card .label,.sumcard .n,.roadmap-item .ttl,.visi-ribbon .text,.site-foote
       <input id="f_evidence" name="f_evidence" type="url" maxlength="500" placeholder="https://drive.google.com/...">
       <div class="field-error" id="f_evidence_error" role="alert">Tautan harus diawali dengan http:// atau https://</div>
     </div>
+    <div class="fieldset-box">
+      <div class="fs-title">Realisasi Anggaran (opsional)</div>
+      <div class="field-row2">
+        <div class="field" style="margin-bottom:0">
+          <label for="f_budget_target">Anggaran Direncanakan (Rp)</label>
+          <input id="f_budget_target" name="f_budget_target" type="number" min="0" step="1" placeholder="0">
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label for="f_budget_realized">Anggaran Terealisasi (Rp)</label>
+          <input id="f_budget_realized" name="f_budget_realized" type="number" min="0" step="1" placeholder="0">
+        </div>
+      </div>
+      <div class="sub-hint" style="margin-top:8px">Isi hanya jika program ini memiliki komponen anggaran yang ingin dipantau bersamaan dengan progres fisik.</div>
+    </div>
+    <label class="checkbox-field" for="f_verified">
+      <input type="checkbox" id="f_verified" name="f_verified">
+      <span>
+        <div class="cf-label">Tandai sebagai Terverifikasi</div>
+        <div class="cf-sub">Centang hanya setelah bukti/dokumen pendukung ditinjau dan dinyatakan sesuai. Jika isi progres diubah lagi setelah ini, status verifikasi akan otomatis kembali ke "Menunggu Verifikasi" agar tidak ada klaim yang tersisa tanpa peninjauan ulang.</div>
+      </span>
+    </label>
     <div class="modal-actions">
       <button class="btn ghost" id="cancelBtn">Batal</button>
       <button class="btn" id="deleteBtn" style="background:var(--danger);display:none">Hapus</button>
@@ -587,6 +663,7 @@ const API_URL = "https://script.google.com/macros/s/AKfycbxN4TtyhPCPBC4nWIPHbPy6
 
 const TYPE_LABEL = { weekly: "Mingguan", monthly: "Bulanan", yearly: "Tahunan" };
 let activeType = "weekly";
+let activeSchoolYear = "";
 let allDocs = [];
 let editingId = null;
 let adminToken = localStorage.getItem("renstra_admin_token") || "";
@@ -601,6 +678,8 @@ const summaryEl = document.getElementById("summary");
 const listTitleEl = document.getElementById("listTitle");
 const addBtn = document.getElementById("addBtn");
 const overlay = document.getElementById("overlay");
+const yearFilterEl = document.getElementById("yearFilter");
+yearFilterEl.addEventListener("change", () => { activeSchoolYear = yearFilterEl.value; renderAll(); });
 
 // ====== HEADER: mengecil (compact) otomatis saat scroll ======
 (function initCompactHeader(){
@@ -654,6 +733,82 @@ function renderSnpOptions(){
   sel.dataset.rendered = "1";
   sel.innerHTML = `<option value="">— Tidak ditentukan —</option>` +
     SNP_OPTIONS.map(o => `<option value="${o.v}">${escapeHtml(o.label)}</option>`).join("");
+}
+
+// ====== DAFTAR PROGRAM RKT RESMI ======
+// Entri Mingguan WAJIB dikaitkan ke salah satu program resmi di daftar ini
+// (bukan teks bebas), supaya progres per-program bisa dipantau konsisten
+// dan tidak tercampur akibat variasi penulisan label antar minggu. Opsi
+// "Program Lainnya" tetap disediakan sebagai jalan keluar terbatas untuk
+// kegiatan yang benar-benar belum masuk daftar resmi.
+const RKT_PROGRAMS = [
+  { id: "sarpras_lab_tjkt",     label: "Pengadaan 20 Unit PC Laboratorium TJKT", snp: "Sarpras" },
+  { id: "ptk_workshop_km",      label: "Workshop Kurikulum Merdeka (32 JP)", snp: "PTK" },
+  { id: "skl_jobfair",          label: "Job Fair & Program Pemagangan Lulusan", snp: "SKL" },
+  { id: "sarpras_umum",         label: "Pembenahan Sarana & Prasarana Umum", snp: "Sarpras" },
+  { id: "proses_supervisi",     label: "Supervisi & Evaluasi Proses Pembelajaran", snp: "Proses" },
+  { id: "isi_kurikulum",        label: "Pengembangan & Reviu Kurikulum", snp: "Isi" },
+  { id: "pengelolaan_tpmi",     label: "Penguatan Tata Kelola & Audit Internal (TPMI)", snp: "Pengelolaan" },
+  { id: "pembiayaan_blud",      label: "Optimalisasi Pembiayaan / Rintisan BLUD", snp: "Pembiayaan" },
+  { id: "penilaian_ukk",        label: "Uji Kompetensi Keahlian (UKK) & Asesmen", snp: "Penilaian" },
+  { id: "dudi_kemitraan",       label: "Perluasan Kemitraan Dunia Usaha & Industri (DUDI)", snp: "DUDI" },
+  { id: "keterserapan_tracer",  label: "Tracer Study & Keterserapan Lulusan", snp: "Keterserapan" },
+  { id: "lainnya",              label: "Program Lainnya (isi manual)", snp: "" },
+];
+const RKT_PROGRAM_LABEL = Object.fromEntries(RKT_PROGRAMS.map(p => [p.id, p.label]));
+
+function renderProgramOptions(){
+  const sel = document.getElementById("f_program");
+  if(!sel || sel.dataset.rendered) return;
+  sel.dataset.rendered = "1";
+  sel.innerHTML = `<option value="">— Pilih Program RKT —</option>` +
+    RKT_PROGRAMS.map(p => `<option value="${p.id}">${escapeHtml(p.label)}</option>`).join("");
+}
+function setProgramInvalid(isInvalid){
+  document.getElementById("f_program_field").classList.toggle("invalid", isInvalid);
+}
+function setProgramCustomInvalid(isInvalid){
+  document.getElementById("f_program_custom_field").classList.toggle("invalid", isInvalid);
+}
+function programLabelOf(d){
+  if(!d.programId) return "";
+  if(d.programId === "lainnya") return d.programCustomName ? d.programCustomName : "Program Lainnya";
+  return RKT_PROGRAM_LABEL[d.programId] || d.programId;
+}
+
+// ====== TAHUN AJARAN (mis. "2025/2026") ======
+// Tahun ajaran Indonesia berjalan Juli s.d. Juni. Untuk Mingguan, tahun
+// ajaran dihitung otomatis dari Tanggal Minggu Ini agar konsisten dan
+// tidak bisa disetel keliru secara manual. Untuk Tahunan, admin memilih
+// langsung dari daftar tahun peta jalan Renstra (2025/2026 s.d. 2028/2029).
+function schoolYearOf(dateStr){
+  if(!dateStr) return "";
+  const dt = new Date(dateStr + "T00:00:00");
+  if(isNaN(dt.getTime())) return "";
+  const y = dt.getFullYear(), m = dt.getMonth() + 1; // 1-12
+  return m >= 7 ? `${y}/${y+1}` : `${y-1}/${y}`;
+}
+const SCHOOL_YEAR_OPTIONS = ["2025/2026", "2026/2027", "2027/2028", "2028/2029"];
+function renderSchoolYearFormOptions(){
+  const sel = document.getElementById("f_schoolyear");
+  if(!sel || sel.dataset.rendered) return;
+  sel.dataset.rendered = "1";
+  sel.innerHTML = SCHOOL_YEAR_OPTIONS.map(y => `<option value="${y}">${y}</option>`).join("");
+}
+function renderYearFilterOptions(){
+  const sel = document.getElementById("yearFilter");
+  if(!sel) return;
+  const years = new Set();
+  allDocs.forEach(d => { const y = d.schoolYear || schoolYearOf(d.periodDate); if(y) years.add(y); });
+  const sorted = Array.from(years).sort().reverse();
+  const current = sel.value;
+  sel.innerHTML = `<option value="">Semua Tahun Ajaran</option>` +
+    sorted.map(y => `<option value="${escapeHtml(y)}">${escapeHtml(y)}</option>`).join("");
+  if(sorted.includes(current)) sel.value = current;
+}
+function getFilteredDocs(){
+  if(!activeSchoolYear) return allDocs;
+  return allDocs.filter(d => (d.schoolYear || schoolYearOf(d.periodDate)) === activeSchoolYear);
 }
 
 // Rekonsiliasi skala Capaian 0-100% dengan skor EDS Level 1-4,
@@ -743,7 +898,7 @@ wireSlider("f_achieved_pct", "f_achieved_pct_val");
 // source of truth) dan mencegah angka Bulanan bertentangan dengan Mingguan.
 const MONTH_NAMES = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
 function computeMonthlyAggregates(){
-  const weekly = allDocs.filter(d => d.type === "weekly" && d.periodDate);
+  const weekly = getFilteredDocs().filter(d => d.type === "weekly" && d.periodDate);
   const byMonth = {};
   weekly.forEach(d => {
     const dt = new Date(d.periodDate + "T00:00:00");
@@ -841,9 +996,11 @@ function sumCard(avg, label, sub){
 }
 
 function renderSummary(){
+  renderYearFilterOptions();
   summaryEl.innerHTML = "";
+  const scoped = getFilteredDocs();
 
-  const weeklyDocs = allDocs.filter(d => d.type === "weekly");
+  const weeklyDocs = scoped.filter(d => d.type === "weekly");
   const weeklyAvg = weeklyDocs.length ? Math.round(weeklyDocs.reduce((s,d)=>s+(Number(d.achieved)||0),0)/weeklyDocs.length) : 0;
   summaryEl.appendChild(sumCard(weeklyAvg, "Rata-rata Capaian Mingguan", `${weeklyDocs.length} entri tercatat`));
 
@@ -851,7 +1008,7 @@ function renderSummary(){
   const monthlyAvg = monthlyAggs.length ? Math.round(monthlyAggs.reduce((s,m)=>s+m.avgAchieved,0)/monthlyAggs.length) : 0;
   summaryEl.appendChild(sumCard(monthlyAvg, "Rata-rata Capaian Bulanan", `${monthlyAggs.length} bulan terhitung • otomatis dari Mingguan`));
 
-  const yearlyDocs = allDocs.filter(d => d.type === "yearly");
+  const yearlyDocs = scoped.filter(d => d.type === "yearly");
   const yearlyAvg = yearlyDocs.length ? Math.round(yearlyDocs.reduce((s,d)=>s+(Number(d.achieved)||0),0)/yearlyDocs.length) : 0;
   summaryEl.appendChild(sumCard(yearlyAvg, "Rata-rata Capaian Tahunan", `${yearlyDocs.length} entri tercatat • ${edsScoreLabel(yearlyAvg)}`));
 
@@ -859,17 +1016,17 @@ function renderSummary(){
   if (hsEl){
     // Ring header memakai gabungan Mingguan+Tahunan (sumber data asli),
     // tidak menghitung ulang Bulanan agar tidak menghitung dua kali.
-    const base = allDocs.filter(d => d.type === "weekly" || d.type === "yearly");
+    const base = scoped.filter(d => d.type === "weekly" || d.type === "yearly");
     hsEl.textContent = base.length
       ? Math.round(base.reduce((s,d)=>s+(Number(d.achieved)||0),0)/base.length) + "%"
       : "\u2013%";
   }
   const lastEl = document.getElementById("lastUpdateGlobal");
   if(lastEl){
-    const latest = allDocs.reduce((m,d) => Math.max(m, Number(d.updatedAt)||0), 0);
+    const latest = scoped.reduce((m,d) => Math.max(m, Number(d.updatedAt)||0), 0);
     if(latest){
       lastEl.style.display = "flex";
-      lastEl.innerHTML = "🕒 Data seluruh periode terakhir diperbarui: <b>" + escapeHtml(formatDateTime(latest)) + "</b>";
+      lastEl.innerHTML = "🕒 Data periode terpilih terakhir diperbarui: <b>" + escapeHtml(formatDateTime(latest)) + "</b>";
     } else {
       lastEl.style.display = "none";
     }
@@ -890,16 +1047,37 @@ function formatDateOnly(iso){
   }catch(e){ return iso; }
 }
 
+function formatRupiah(n){
+  const v = Number(n) || 0;
+  try{ return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(v); }
+  catch(e){ return "Rp" + v.toLocaleString("id-ID"); }
+}
+
+function parseHistory(d){
+  if(!d.history) return [];
+  try{ const arr = JSON.parse(d.history); return Array.isArray(arr) ? arr : []; }
+  catch(e){ return []; }
+}
+
+function historyBoxHtml(d){
+  const items = parseHistory(d);
+  if(!items.length) return "";
+  const rows = items.slice().reverse().map(h => `
+    <div class="history-item"><span class="h-when">${escapeHtml(formatDateTime(h.ts))}</span>${h.by ? " — " + escapeHtml(h.by) : ""}<br>${escapeHtml(h.summary || "")}</div>
+  `).join("");
+  return `<details class="history-box"><summary>Riwayat Perubahan (${items.length})</summary><div class="history-list">${rows}</div></details>`;
+}
+
 function renderList(){
   listTitleEl.textContent = "Rincian Progres " + TYPE_LABEL[activeType];
   updateToolbarUI();
   listEl.innerHTML = "";
   if(activeType === "monthly"){ renderMonthlyList(); return; }
 
-  const docs = allDocs.filter(d => d.type === activeType)
+  const docs = getFilteredDocs().filter(d => d.type === activeType)
     .sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
   if(!docs.length){
-    listEl.innerHTML = `<div class="empty">Belum ada data untuk periode ${TYPE_LABEL[activeType].toLowerCase()}.${canEdit ? " Klik \u201c+ Tambah\u201d untuk mencatat progres pertama." : " Data akan tampil setelah admin menambahkannya."}</div>`;
+    listEl.innerHTML = `<div class="empty">Belum ada data untuk periode ${TYPE_LABEL[activeType].toLowerCase()}${activeSchoolYear ? " pada tahun ajaran " + escapeHtml(activeSchoolYear) : ""}.${canEdit ? " Klik \u201c+ Tambah\u201d untuk mencatat progres pertama." : " Data akan tampil setelah admin menambahkannya."}</div>`;
     return;
   }
   docs.forEach(d => {
@@ -912,6 +1090,14 @@ function renderList(){
     // sehingga tidak direkonsiliasi ke skala EDS di sini.
     const scoreLine = d.type === "yearly" ? ` &nbsp;•&nbsp; <span class="eds-score">${edsScoreLabel(pct)}</span>` : "";
     const dateLine = d.periodDate ? ` &nbsp;•&nbsp; ${escapeHtml(formatDateOnly(d.periodDate))}` : "";
+    const progLabel = programLabelOf(d);
+    const yr = d.schoolYear || schoolYearOf(d.periodDate);
+    const isVerified = d.verified === true || d.verified === "true";
+    const budgetTarget = Number(d.budgetTarget) || 0;
+    const budgetRealized = Number(d.budgetRealized) || 0;
+    const budgetLine = budgetTarget > 0
+      ? `<div class="budget-line">💰 <b>Anggaran:</b> ${formatRupiah(budgetRealized)} terealisasi dari rencana ${formatRupiah(budgetTarget)}</div>`
+      : "";
     const card = document.createElement("div");
     card.className = "card";
     card.innerHTML = `
@@ -924,13 +1110,18 @@ function renderList(){
         <span>Target: ${target}% &nbsp;•&nbsp; Capaian: ${pct}%${scoreLine}${dateLine}</span>
         <span style="display:flex;gap:6px;flex-wrap:wrap;">
           <span class="status ${st.cls}">${st.text}</span>
+          <span class="verifybadge ${isVerified ? "yes" : "no"}">${isVerified ? "✔ Terverifikasi" : "⏳ Menunggu Verifikasi"}</span>
           <span class="badge">${TYPE_LABEL[d.type]}</span>
+          ${yr ? `<span class="yearbadge">${escapeHtml(yr)}</span>` : ""}
           ${d.snp ? `<span class="snpbadge">${escapeHtml(SNP_LABEL[d.snp] || d.snp)}</span>` : ""}
         </span>
       </div>
+      ${progLabel ? `<div class="meta" style="margin-top:6px"><span class="progbadge">🎯 ${escapeHtml(progLabel)}</span></div>` : ""}
       ${d.note ? `<div class="note">📝 ${escapeHtml(d.note)}</div>` : ""}
+      ${budgetLine}
       ${evidHref ? `<a class="evid-link" href="${escapeHtml(evidHref)}" target="_blank" rel="noopener noreferrer">🔗 Lihat bukti / dokumen pendukung</a>` : ""}
       ${d.updatedAt ? `<div class="updated-line">🕒 Diperbarui: ${escapeHtml(formatDateTime(d.updatedAt))}${d.editedBy ? " oleh " + escapeHtml(d.editedBy) : ""}</div>` : ""}
+      ${historyBoxHtml(d)}
     `;
     if(canEdit){
       const actions = document.createElement("div");
@@ -939,10 +1130,34 @@ function renderList(){
       editB.className = "btn ghost sm"; editB.textContent = "Ubah";
       editB.onclick = () => openModal(d);
       actions.appendChild(editB);
+      const verifyB = document.createElement("button");
+      verifyB.className = "btn ghost sm";
+      verifyB.textContent = isVerified ? "Batalkan Verifikasi" : "Verifikasi";
+      verifyB.onclick = () => quickToggleVerify(d);
+      actions.appendChild(verifyB);
       card.appendChild(actions);
     }
     listEl.appendChild(card);
   });
+}
+
+// Verifikasi cepat tanpa membuka modal penuh: hanya mengubah status
+// verifikasi, field lain dikirim apa adanya (tidak berubah) sehingga
+// backend tidak menganggap ini sebagai perubahan isi progres.
+async function quickToggleVerify(d){
+  const nextVerified = !(d.verified === true || d.verified === "true");
+  if(nextVerified && !confirm("Tandai entri \"" + (d.label||"") + "\" sebagai Terverifikasi?")) return;
+  try{
+    await apiWrite("update", { id: d.id, data: {
+      type: d.type, label: d.label, target: d.target, achieved: d.achieved,
+      note: d.note, snp: d.snp, evidenceUrl: d.evidenceUrl, periodDate: d.periodDate,
+      programId: d.programId, programCustomName: d.programCustomName,
+      schoolYear: d.schoolYear || schoolYearOf(d.periodDate),
+      budgetTarget: d.budgetTarget, budgetRealized: d.budgetRealized,
+      verified: nextVerified, editedBy: adminName || "Admin",
+    }});
+    await loadData();
+  }catch(err){ alert("Gagal memperbarui status verifikasi: " + (err?.message || err)); }
 }
 
 function renderMonthlyList(){
@@ -991,7 +1206,7 @@ function renderTrend(){
       .slice().sort((a,b) => a.key.localeCompare(b.key))
       .map(m => ({ label: m.label, achieved: m.avgAchieved }));
   } else {
-    series = allDocs.filter(d => d.type === activeType)
+    series = getFilteredDocs().filter(d => d.type === activeType)
       .sort((a,b) => (a.createdAt||0) - (b.createdAt||0))
       .map(d => ({ label: d.label||"", achieved: d.achieved }));
   }
@@ -1027,6 +1242,11 @@ const FAQ_ITEMS = [
   ["Apa itu EDS, Renstra, RKT, dan SNP?", "EDS (Evaluasi Diri Sekolah) adalah proses pengukuran kondisi sekolah berdasarkan 8 Standar Nasional Pendidikan (SNP). Hasil EDS menjadi dasar penyusunan Renstra (rencana 4 tahun), yang selanjutnya diturunkan menjadi RKT (rencana kerja 1 tahun berjalan)."],
   ["Bagaimana cara melihat progres per minggu, bulan, atau tahun?", "Gunakan tiga tab pada bagian atas halaman (Mingguan, Bulanan, Tahunan). Setiap tab menampilkan ringkasan rata-rata, grafik tren, dan rincian entri untuk periode yang dipilih."],
   ["Mengapa suatu periode belum menampilkan data?", "Untuk Mingguan dan Tahunan, artinya admin belum menambahkan entri untuk periode tersebut. Untuk Bulanan, artinya belum ada entri Mingguan dengan \"Tanggal Minggu Ini\" yang jatuh pada bulan tersebut."],
+  ["Mengapa entri Mingguan harus memilih Program RKT dari daftar, bukan mengetik bebas?", "Setiap entri Mingguan wajib dikaitkan ke salah satu Program RKT resmi pada daftar yang tersedia. Ini mencegah variasi penulisan (typo, singkatan berbeda) membuat progres satu program terlihat terpecah menjadi beberapa \"label\" berbeda, sehingga agregasi Bulanan dan pelaporan tetap konsisten. Jika kegiatan benar-benar belum ada di daftar, pilih \"Program Lainnya\" dan isi nama programnya."],
+  ["Apa beda status Tercapai/Dalam Proses/Perlu Perhatian dengan status Terverifikasi?", "Status Tercapai/Dalam Proses/Perlu Perhatian dihitung otomatis dari perbandingan Target vs Capaian yang diisi admin — ini adalah klaim sepihak dari pengisi data. Status Terverifikasi/Menunggu Verifikasi terpisah dan hanya berubah menjadi Terverifikasi setelah seseorang secara sadar meninjau bukti pendukung dan mencentangnya. Jika isi progres diubah lagi setelah diverifikasi, status verifikasi otomatis kembali ke Menunggu Verifikasi."],
+  ["Apa gunanya filter Tahun Ajaran?", "Filter Tahun Ajaran (di atas daftar Progres) membatasi ringkasan, grafik tren, dan rincian data agar hanya menampilkan satu tahun ajaran tertentu (mis. 2025/2026), mencegah data lintas tahun tercampur saat dibandingkan."],
+  ["Apakah riwayat perubahan data disimpan?", "Ya. Setiap kali sebuah entri dibuat atau diubah, sistem mencatat waktu, nama pengubah, dan ringkasan field yang berubah pada bagian \"Riwayat Perubahan\" di kartu data maupun di formulir ubah data — bukan hanya status/angka akhirnya saja."],
+  ["Apakah realisasi anggaran bisa dipantau di sini?", "Bisa, secara opsional. Pada formulir Tambah/Ubah Progres tersedia kolom Anggaran Direncanakan dan Anggaran Terealisasi. Kolom ini boleh dikosongkan untuk program yang tidak memiliki komponen anggaran tersendiri."],
 ];
 
 function renderFaq(){
@@ -1060,6 +1280,24 @@ function applyTypeMode(type, doc){
   const isWeekly = type === "weekly";
   document.getElementById("f_period_date_field").style.display = isWeekly ? "block" : "none";
   document.getElementById("f_period_date_field").classList.remove("invalid");
+  document.getElementById("f_program_field").style.display = isWeekly ? "block" : "none";
+  setProgramInvalid(false);
+  const customField = document.getElementById("f_program_custom_field");
+  const progSel = document.getElementById("f_program");
+  if(isWeekly){
+    progSel.value = doc ? (doc.programId || "") : "";
+    customField.style.display = progSel.value === "lainnya" ? "block" : "none";
+    document.getElementById("f_program_custom").value = doc ? (doc.programCustomName || "") : "";
+  } else {
+    customField.style.display = "none";
+  }
+  setProgramCustomInvalid(false);
+  document.getElementById("f_schoolyear_field").style.display = isWeekly ? "none" : "block";
+  if(!isWeekly){
+    renderSchoolYearFormOptions();
+    const sy = document.getElementById("f_schoolyear");
+    sy.value = doc && doc.schoolYear && SCHOOL_YEAR_OPTIONS.includes(doc.schoolYear) ? doc.schoolYear : SCHOOL_YEAR_OPTIONS[0];
+  }
   document.getElementById("f_target_pct_wrap").style.display = isWeekly ? "block" : "none";
   document.getElementById("f_target_row").style.display = isWeekly ? "none" : "flex";
   document.getElementById("f_achieved_pct_wrap").style.display = isWeekly ? "block" : "none";
@@ -1083,6 +1321,7 @@ function applyTypeMode(type, doc){
 function openModal(doc){
   editingId = doc ? doc.id : null;
   renderSnpOptions();
+  renderProgramOptions();
   document.getElementById("modalTitle").textContent = doc ? "Ubah Progres" : "Tambah Progres";
   const typeSel = document.getElementById("f_type");
   const type = doc ? doc.type : (activeType === "monthly" ? "weekly" : activeType);
@@ -1095,6 +1334,9 @@ function openModal(doc){
   document.getElementById("f_note").value = doc ? (doc.note||"") : "";
   document.getElementById("f_evidence").value = doc ? (doc.evidenceUrl||"") : "";
   document.getElementById("f_evidence_field").classList.remove("invalid");
+  document.getElementById("f_budget_target").value = doc && Number(doc.budgetTarget) ? Number(doc.budgetTarget) : "";
+  document.getElementById("f_budget_realized").value = doc && Number(doc.budgetRealized) ? Number(doc.budgetRealized) : "";
+  document.getElementById("f_verified").checked = !!(doc && (doc.verified === true || doc.verified === "true"));
   document.getElementById("deleteBtn").style.display = doc ? "inline-block" : "none";
   const lastInfo = document.getElementById("modalLastInfo");
   if(doc && doc.updatedAt){
@@ -1105,6 +1347,18 @@ function openModal(doc){
     lastInfo.style.display = "none";
     lastInfo.innerHTML = "";
   }
+  const histBox = document.getElementById("modalHistoryBox");
+  const histList = document.getElementById("modalHistoryList");
+  const histItems = doc ? parseHistory(doc) : [];
+  if(histItems.length){
+    histBox.style.display = "block";
+    histList.innerHTML = histItems.slice().reverse().map(h => `
+      <div class="history-item"><span class="h-when">${escapeHtml(formatDateTime(h.ts))}</span>${h.by ? " — " + escapeHtml(h.by) : ""}<br>${escapeHtml(h.summary || "")}</div>
+    `).join("");
+  } else {
+    histBox.style.display = "none";
+    histList.innerHTML = "";
+  }
   overlay.style.display = "flex";
 }
 function closeModal(){ overlay.style.display = "none"; editingId = null; }
@@ -1113,6 +1367,10 @@ document.getElementById("addBtn").onclick = () => openModal(null);
 document.getElementById("cancelBtn").onclick = closeModal;
 overlay.addEventListener("click", (e) => { if(e.target === overlay) closeModal(); });
 document.getElementById("f_type").addEventListener("change", (e) => applyTypeMode(e.target.value, null));
+document.getElementById("f_program").addEventListener("change", (e) => {
+  document.getElementById("f_program_custom_field").style.display = e.target.value === "lainnya" ? "block" : "none";
+  setProgramInvalid(false);
+});
 
 document.getElementById("f_label").addEventListener("input", () => setLabelInvalid(false));
 document.getElementById("f_label").addEventListener("keydown", (e) => {
@@ -1124,6 +1382,11 @@ document.getElementById("saveBtn").onclick = async () => {
   const isWeekly = type === "weekly";
   const evidenceRaw = document.getElementById("f_evidence").value.trim();
   const periodDate = document.getElementById("f_period_date").value;
+  const programId = isWeekly ? document.getElementById("f_program").value : "";
+  const programCustomName = document.getElementById("f_program_custom").value.trim();
+  const schoolYear = isWeekly ? schoolYearOf(periodDate) : document.getElementById("f_schoolyear").value;
+  const budgetTarget = Number(document.getElementById("f_budget_target").value) || 0;
+  const budgetRealized = Number(document.getElementById("f_budget_realized").value) || 0;
   const data = {
     type,
     label: document.getElementById("f_label").value.trim(),
@@ -1134,6 +1397,11 @@ document.getElementById("saveBtn").onclick = async () => {
     evidenceUrl: evidenceRaw,
     editedBy: adminName || "Admin",
     periodDate: isWeekly ? periodDate : "",
+    programId,
+    programCustomName: programId === "lainnya" ? programCustomName : "",
+    schoolYear,
+    budgetTarget, budgetRealized,
+    verified: document.getElementById("f_verified").checked,
   };
   if(!data.label){
     setLabelInvalid(true);
@@ -1150,6 +1418,22 @@ document.getElementById("saveBtn").onclick = async () => {
     return;
   }
   dateField.classList.remove("invalid");
+  if(isWeekly && !programId){
+    setProgramInvalid(true);
+    const progField = document.getElementById("f_program_field");
+    document.getElementById("f_program").focus();
+    progField.scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+  setProgramInvalid(false);
+  if(isWeekly && programId === "lainnya" && !programCustomName){
+    setProgramCustomInvalid(true);
+    const progCustomField = document.getElementById("f_program_custom_field");
+    document.getElementById("f_program_custom").focus();
+    progCustomField.scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+  setProgramCustomInvalid(false);
   const evidField = document.getElementById("f_evidence_field");
   if(evidenceRaw && !safeUrl(evidenceRaw)){
     evidField.classList.add("invalid");
