@@ -642,7 +642,7 @@ h1,h3,.card .label,.sumcard .n,.roadmap-item .ttl,.visi-ribbon .text,.site-foote
     <h3>🔒 Masuk sebagai Administrator</h3>
     <div class="field">
       <label for="f_admin_name">Nama Anda</label>
-      <input id="f_admin_name" name="f_admin_name" type="text" maxlength="60" autocomplete="off" placeholder="mis. Nasrullah / TPMI">
+      <input id="f_admin_name" name="f_admin_name" type="text" maxlength="60" autocomplete="off" placeholder="Nama lengkap Anda">
       <div class="sub-hint">Dicatat sebagai jejak audit pada setiap perubahan data yang Anda lakukan.</div>
     </div>
     <div class="field">
@@ -831,6 +831,16 @@ function formatDateTime(ts){
   }catch(e){ return new Date(n).toLocaleString("id-ID"); }
 }
 
+// Pesan error yang ramah untuk ditampilkan pada aksi admin (simpan/hapus/
+// verifikasi). Detail teknis mentah dari server HANYA dicatat ke console
+// (bisa diperiksa lewat DevTools bila admin perlu menelusuri), sementara
+// yang ditampilkan ke layar selalu berupa kalimat yang jelas dan profesional
+// tanpa membocorkan detail internal backend.
+function adminErrorMessage(action, err){
+  console.error(action, err);
+  return `Gagal ${action}. Silakan periksa koneksi internet Anda dan coba lagi. Jika masalah berlanjut, hubungi administrator sistem.`;
+}
+
 // Hanya izinkan tautan http/https untuk mencegah skema berbahaya (mis. javascript:).
 function safeUrl(url){
   const u = String(url || "").trim();
@@ -954,16 +964,22 @@ async function loadData(){
       renderAll();
     }
   }catch(err){
+    // Detail teknis mentah HANYA dicatat ke console dan ditampilkan bila
+    // sedang login sebagai admin — pengunjung publik tidak pernah melihat
+    // pesan error asli dari server agar tidak membocorkan detail backend.
     console.error("Gagal memuat data:", err);
+    const techDetail = canEdit
+      ? `<details class="err-detail">
+          <summary>Detail teknis untuk administrator</summary>
+          <code>${escapeHtml(err && err.message ? err.message : String(err))}</code>
+        </details>`
+      : "";
     listEl.innerHTML = `<div class="empty state-error">
       <div class="err-icon">📡</div>
       <div class="err-title">Tidak Dapat Terhubung ke Server Data</div>
       <div class="err-desc">Sistem belum berhasil memuat data terbaru dari server sekolah. Hal ini umumnya disebabkan oleh koneksi internet yang tidak stabil atau layanan server yang sedang tidak dapat diakses.</div>
       <button class="btn ghost sm err-retry" onclick="loadData()">↻ Coba Lagi</button>
-      <details class="err-detail">
-        <summary>Detail teknis untuk administrator</summary>
-        <code>${escapeHtml(err.message||String(err))}</code>
-      </details>
+      ${techDetail}
     </div>`;
   }finally{
     isLoading = false;
@@ -1158,7 +1174,7 @@ async function quickToggleVerify(d){
       verified: nextVerified, editedBy: adminName || "Admin",
     }});
     await loadData();
-  }catch(err){ alert("Gagal memperbarui status verifikasi: " + (err?.message || err)); }
+  }catch(err){ alert(adminErrorMessage("memperbarui status verifikasi", err)); }
 }
 
 function renderMonthlyList(){
@@ -1453,7 +1469,7 @@ document.getElementById("saveBtn").onclick = async () => {
     }
     closeModal();
     await loadData();
-  }catch(err){ alert("Gagal menyimpan: " + (err?.message || err)); }
+  }catch(err){ alert(adminErrorMessage("menyimpan data", err)); }
   finally{ saveBtn.disabled = false; saveBtn.textContent = "Simpan"; }
 };
 
@@ -1464,7 +1480,7 @@ document.getElementById("deleteBtn").onclick = async () => {
     await apiWrite("delete", { id: editingId });
     closeModal();
     await loadData();
-  }catch(err){ alert("Gagal menghapus: " + (err?.message || err)); }
+  }catch(err){ alert(adminErrorMessage("menghapus data", err)); }
 };
 
 // ====== LOGIN / LOGOUT ADMIN (token disimpan lokal di browser) ======
