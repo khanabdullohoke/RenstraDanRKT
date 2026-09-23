@@ -151,6 +151,18 @@ button{font-family:inherit;cursor:pointer;}
 .status.warn{background:rgba(217,163,61,.18);color:#8A6A1E;}
 :root[data-theme="dark"] .status.warn{color:#E4C878;}
 .status.danger{background:rgba(180,85,47,.15);color:var(--danger);}
+.snpbadge{font-size:10.5px;padding:2px 9px;border-radius:20px;background:rgba(11,61,145,.09);color:var(--navy);font-weight:700;white-space:nowrap;}
+:root[data-theme="dark"] .snpbadge{background:rgba(217,163,61,.14);color:var(--gold-soft);}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .snpbadge{background:rgba(217,163,61,.14);color:var(--gold-soft);}}
+.eds-score{font-size:11px;color:var(--muted);}
+.evid-link{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--navy);font-weight:600;text-decoration:none;margin-top:9px;}
+:root[data-theme="dark"] .evid-link{color:var(--gold-soft);}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .evid-link{color:var(--gold-soft);}}
+.evid-link:hover{text-decoration:underline;}
+.updated-line{font-size:11px;color:var(--muted);margin-top:7px;display:flex;align-items:center;gap:5px;}
+.lastupdate-global{font-size:11.5px;color:var(--muted);margin:-6px 0 16px;display:flex;align-items:center;gap:6px;}
+.lastupdate-global b{color:var(--text);font-weight:700;}
+.modal-lastinfo{font-size:11px;color:var(--muted);background:var(--ice);border-radius:9px;padding:8px 10px;margin:-4px 0 14px;line-height:1.5;}
 .info-panel{background:var(--ice);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;margin-bottom:18px;}
 .info-panel h3{margin:0 0 7px;font-family:var(--font-display);font-size:14.5px;font-weight:600;color:var(--navy);}
 :root[data-theme="dark"] .info-panel h3{color:var(--gold-soft);}
@@ -420,6 +432,7 @@ h1,h3,.card .label,.sumcard .n,.roadmap-item .ttl,.visi-ribbon .text,.site-foote
   </div>
 
   <div class="summary" id="summary"></div>
+  <div class="lastupdate-global" id="lastUpdateGlobal" style="display:none"></div>
   <div class="trendbox" id="trendbox" style="display:none">
     <h3>Tren Perkembangan</h3>
     <div class="sub" id="trendSub"></div>
@@ -476,6 +489,7 @@ h1,h3,.card .label,.sumcard .n,.roadmap-item .ttl,.visi-ribbon .text,.site-foote
 <div class="overlay" id="overlay" style="display:none">
   <div class="modal">
     <h3 id="modalTitle">Tambah Progres</h3>
+    <div class="modal-lastinfo" id="modalLastInfo" style="display:none"></div>
     <div class="field">
       <label for="f_type">Tipe Periode</label>
       <select id="f_type" name="f_type">
@@ -500,8 +514,17 @@ h1,h3,.card .label,.sumcard .n,.roadmap-item .ttl,.visi-ribbon .text,.site-foote
       <div class="sub-hint" id="f_achieved_hint">Pilih tingkat capaian sesuai skala Level 1–4 EDS yang benar-benar sudah terealisasi.</div>
     </div>
     <div class="field">
+      <label for="f_snp">Rujukan Standar (SNP)</label>
+      <select id="f_snp" name="f_snp"></select>
+    </div>
+    <div class="field">
       <label for="f_note">Catatan</label>
       <textarea id="f_note" name="f_note" maxlength="500" placeholder="Catatan singkat progres..."></textarea>
+    </div>
+    <div class="field" id="f_evidence_field">
+      <label for="f_evidence">Tautan Bukti / Dokumen Pendukung</label>
+      <input id="f_evidence" name="f_evidence" type="url" maxlength="500" placeholder="https://drive.google.com/...">
+      <div class="field-error" id="f_evidence_error" role="alert">Tautan harus diawali dengan http:// atau https://</div>
     </div>
     <div class="modal-actions">
       <button class="btn ghost" id="cancelBtn">Batal</button>
@@ -514,6 +537,11 @@ h1,h3,.card .label,.sumcard .n,.roadmap-item .ttl,.visi-ribbon .text,.site-foote
 <div class="overlay" id="adminOverlay" style="display:none">
   <div class="modal" style="max-width:380px">
     <h3>🔒 Masuk sebagai Administrator</h3>
+    <div class="field">
+      <label for="f_admin_name">Nama Anda</label>
+      <input id="f_admin_name" name="f_admin_name" type="text" maxlength="60" autocomplete="off" placeholder="mis. Nasrullah / TPMI">
+      <div class="sub-hint">Dicatat sebagai jejak audit pada setiap perubahan data yang Anda lakukan.</div>
+    </div>
     <div class="field">
       <label for="f_admin_token">Token Administrator</label>
       <input id="f_admin_token" name="f_admin_token" type="password" autocomplete="off" spellcheck="false" placeholder="Masukkan token rahasia Anda">
@@ -536,6 +564,7 @@ let activeType = "weekly";
 let allDocs = [];
 let editingId = null;
 let adminToken = localStorage.getItem("renstra_admin_token") || "";
+let adminName = localStorage.getItem("renstra_admin_name") || "";
 let canEdit = !!adminToken;
 let isLoading = false;
 
@@ -577,6 +606,54 @@ const overlay = document.getElementById("overlay");
   window.addEventListener("scroll", onScroll, { passive: true });
   applyState(); // set state awal (mis. saat reload dalam posisi ter-scroll)
 })();
+
+const SNP_OPTIONS = [
+  { v: "SKL",          label: "1. Standar Kompetensi Lulusan (SKL)" },
+  { v: "Isi",          label: "2. Standar Isi" },
+  { v: "Proses",       label: "3. Standar Proses" },
+  { v: "PTK",          label: "4. Standar PTK (Guru & Tendik)" },
+  { v: "Sarpras",      label: "5. Standar Sarana & Prasarana" },
+  { v: "Pengelolaan",  label: "6. Standar Pengelolaan" },
+  { v: "Pembiayaan",   label: "7. Standar Pembiayaan" },
+  { v: "Penilaian",    label: "8. Standar Penilaian" },
+  { v: "DUDI",         label: "Kemitraan Industri (DUDI)" },
+  { v: "Keterserapan", label: "Tingkat Keterserapan Lulusan" },
+];
+const SNP_LABEL = Object.fromEntries(SNP_OPTIONS.map(o => [o.v, o.label.replace(/^\d+\.\s*/, "")]));
+
+function renderSnpOptions(){
+  const sel = document.getElementById("f_snp");
+  if(!sel || sel.dataset.rendered) return;
+  sel.dataset.rendered = "1";
+  sel.innerHTML = `<option value="">— Tidak ditentukan —</option>` +
+    SNP_OPTIONS.map(o => `<option value="${o.v}">${escapeHtml(o.label)}</option>`).join("");
+}
+
+// Rekonsiliasi skala Capaian 0-100% dengan skor EDS Level 1-4,
+// mengikuti skala LEVEL_OPTIONS (0%→Belum Dimulai, 25%→Lv1 ... 100%→Lv4).
+function edsScoreOf(pct){
+  const p = Math.max(0, Math.min(100, Number(pct) || 0));
+  return (p / 25); // 0, 1, 2, 3, 4
+}
+function edsScoreLabel(pct){
+  const score = edsScoreOf(pct);
+  return "Skor EDS \u2248 " + score.toFixed(1).replace(".", ",");
+}
+
+function formatDateTime(ts){
+  const n = Number(ts);
+  if(!n) return "";
+  try{
+    return new Intl.DateTimeFormat("id-ID", { dateStyle: "medium", timeStyle: "short" }).format(new Date(n));
+  }catch(e){ return new Date(n).toLocaleString("id-ID"); }
+}
+
+// Hanya izinkan tautan http/https untuk mencegah skema berbahaya (mis. javascript:).
+function safeUrl(url){
+  const u = String(url || "").trim();
+  if(/^https?:\/\//i.test(u)) return u;
+  return "";
+}
 
 const LEVEL_OPTIONS = [
   { v: 0,   label: "Belum Dimulai",   sub: "Kegiatan belum berjalan" },
@@ -682,7 +759,7 @@ function renderSummary(){
     const avg = docs.length ? Math.round(docs.reduce((s,d)=>s+(Number(d.achieved)||0),0)/docs.length) : 0;
     const c = document.createElement("div");
     c.className = "sumcard";
-    c.innerHTML = `<div class="n">${avg}%</div><div class="l">Rata-rata Capaian ${label}<br>${docs.length} periode tercatat</div>`;
+    c.innerHTML = `<div class="n">${avg}%</div><div class="l">Rata-rata Capaian ${label}<br>${docs.length} periode tercatat &nbsp;•&nbsp; ${edsScoreLabel(avg)}</div>`;
     summaryEl.appendChild(c);
   });
   const hsEl = document.getElementById("hsAvgPct");
@@ -690,6 +767,16 @@ function renderSummary(){
     hsEl.textContent = allDocs.length
       ? Math.round(allDocs.reduce((s,d)=>s+(Number(d.achieved)||0),0)/allDocs.length) + "%"
       : "\u2013%";
+  }
+  const lastEl = document.getElementById("lastUpdateGlobal");
+  if(lastEl){
+    const latest = allDocs.reduce((m,d) => Math.max(m, Number(d.updatedAt)||0), 0);
+    if(latest){
+      lastEl.style.display = "flex";
+      lastEl.innerHTML = "🕒 Data seluruh periode terakhir diperbarui: <b>" + escapeHtml(formatDateTime(latest)) + "</b>";
+    } else {
+      lastEl.style.display = "none";
+    }
   }
 }
 
@@ -706,6 +793,7 @@ function renderList(){
     const pct = Math.max(0, Math.min(100, Number(d.achieved)||0));
     const target = Math.max(0, Math.min(100, Number(d.target)||0));
     const st = statusOf(pct, target);
+    const evidHref = safeUrl(d.evidenceUrl);
     const card = document.createElement("div");
     card.className = "card";
     card.innerHTML = `
@@ -715,13 +803,16 @@ function renderList(){
       </div>
       <div class="bar"><div style="width:${pct}%"></div></div>
       <div class="meta">
-        <span>Target: ${target}% &nbsp;•&nbsp; Capaian: ${pct}%</span>
-        <span style="display:flex;gap:6px;">
+        <span>Target: ${target}% &nbsp;•&nbsp; Capaian: ${pct}% &nbsp;•&nbsp; <span class="eds-score">${edsScoreLabel(pct)}</span></span>
+        <span style="display:flex;gap:6px;flex-wrap:wrap;">
           <span class="status ${st.cls}">${st.text}</span>
           <span class="badge">${TYPE_LABEL[d.type]}</span>
+          ${d.snp ? `<span class="snpbadge">${escapeHtml(SNP_LABEL[d.snp] || d.snp)}</span>` : ""}
         </span>
       </div>
       ${d.note ? `<div class="note">📝 ${escapeHtml(d.note)}</div>` : ""}
+      ${evidHref ? `<a class="evid-link" href="${escapeHtml(evidHref)}" target="_blank" rel="noopener noreferrer">🔗 Lihat bukti / dokumen pendukung</a>` : ""}
+      ${d.updatedAt ? `<div class="updated-line">🕒 Diperbarui: ${escapeHtml(formatDateTime(d.updatedAt))}${d.editedBy ? " oleh " + escapeHtml(d.editedBy) : ""}</div>` : ""}
     `;
     if(canEdit){
       const actions = document.createElement("div");
@@ -800,14 +891,27 @@ function setLabelInvalid(isInvalid){
 
 function openModal(doc){
   editingId = doc ? doc.id : null;
+  renderSnpOptions();
   document.getElementById("modalTitle").textContent = doc ? "Ubah Progres" : "Tambah Progres";
   document.getElementById("f_type").value = doc ? doc.type : activeType;
   document.getElementById("f_label").value = doc ? (doc.label||"") : "";
   setLabelInvalid(false);
   renderChoiceRow("f_target_row", "f_target", doc ? (doc.target ?? 100) : 100);
   renderChoiceRow("f_achieved_row", "f_achieved", doc ? (doc.achieved ?? 0) : 0);
+  document.getElementById("f_snp").value = doc ? (doc.snp||"") : "";
   document.getElementById("f_note").value = doc ? (doc.note||"") : "";
+  document.getElementById("f_evidence").value = doc ? (doc.evidenceUrl||"") : "";
+  document.getElementById("f_evidence_field").classList.remove("invalid");
   document.getElementById("deleteBtn").style.display = doc ? "inline-block" : "none";
+  const lastInfo = document.getElementById("modalLastInfo");
+  if(doc && doc.updatedAt){
+    lastInfo.style.display = "block";
+    lastInfo.innerHTML = "🕒 Terakhir diperbarui: <b>" + escapeHtml(formatDateTime(doc.updatedAt)) +
+      "</b>" + (doc.editedBy ? " oleh <b>" + escapeHtml(doc.editedBy) + "</b>" : "");
+  } else {
+    lastInfo.style.display = "none";
+    lastInfo.innerHTML = "";
+  }
   overlay.style.display = "flex";
 }
 function closeModal(){ overlay.style.display = "none"; editingId = null; }
@@ -822,12 +926,16 @@ document.getElementById("f_label").addEventListener("keydown", (e) => {
 });
 
 document.getElementById("saveBtn").onclick = async () => {
+  const evidenceRaw = document.getElementById("f_evidence").value.trim();
   const data = {
     type: document.getElementById("f_type").value,
     label: document.getElementById("f_label").value.trim(),
     target: getChoiceValue("f_target"),
     achieved: getChoiceValue("f_achieved"),
+    snp: document.getElementById("f_snp").value,
     note: document.getElementById("f_note").value.trim(),
+    evidenceUrl: evidenceRaw,
+    editedBy: adminName || "Admin",
   };
   if(!data.label){
     setLabelInvalid(true);
@@ -836,6 +944,14 @@ document.getElementById("saveBtn").onclick = async () => {
     labelField.scrollIntoView({ behavior: "smooth", block: "center" });
     return;
   }
+  const evidField = document.getElementById("f_evidence_field");
+  if(evidenceRaw && !safeUrl(evidenceRaw)){
+    evidField.classList.add("invalid");
+    document.getElementById("f_evidence").focus();
+    evidField.scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+  evidField.classList.remove("invalid");
   const saveBtn = document.getElementById("saveBtn");
   saveBtn.disabled = true; saveBtn.textContent = "Menyimpan...";
   try{
@@ -869,10 +985,13 @@ function updateAdminUI(){
 const adminOverlay = document.getElementById("adminOverlay");
 const adminTokenInput = document.getElementById("f_admin_token");
 
+const adminNameInput = document.getElementById("f_admin_name");
+
 function openAdminLogin(){
   adminTokenInput.value = "";
+  adminNameInput.value = adminName || "";
   adminOverlay.style.display = "flex";
-  setTimeout(() => adminTokenInput.focus(), 50);
+  setTimeout(() => adminNameInput.focus(), 50);
 }
 function closeAdminLogin(){ adminOverlay.style.display = "none"; }
 
@@ -890,8 +1009,12 @@ adminOverlay.addEventListener("click", (e) => { if(e.target === adminOverlay) cl
 function submitAdminLogin(){
   const t = adminTokenInput.value.trim();
   if(!t){ adminTokenInput.focus(); return; }
+  const n = adminNameInput.value.trim();
+  if(!n){ adminNameInput.focus(); return; }
   adminToken = t;
+  adminName = n;
   localStorage.setItem("renstra_admin_token", adminToken);
+  localStorage.setItem("renstra_admin_name", adminName);
   canEdit = true; updateAdminUI(); renderList(); closeAdminLogin();
 }
 document.getElementById("adminSubmitBtn").onclick = submitAdminLogin;
