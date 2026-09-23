@@ -9,9 +9,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --navy:#0B3D91; --navy2:#0A2E6E; --navy3:#072253; --gold:#C8962C; --gold-soft:#E4C078; --ice:#EAF0FB; --slate:#5A6480;
+  --navy:#0B3D91; --navy2:#0C3B87; --navy3:#0A2E6E; --gold:#D9A33D; --gold-dark:#B8862A; --gold-soft:#F0C878; --ice:#E7F0FD; --slate:#5A6480;
   --bg:#F4F6FB; --card:#FFFFFF; --text:#101B36; --muted:#5F6B8C; --line:#E3E8F4;
-  --danger:#B4552F; --ok:#2E7D46;
+  --danger:#B4552F; --ok:#159D6C;
   --font-body:'Plus Jakarta Sans',"Segoe UI",Calibri,Arial,sans-serif;
   --font-display:'Plus Jakarta Sans',"Segoe UI",Calibri,Arial,sans-serif;
   --shadow-sm:0 1px 2px rgba(11,32,74,.04), 0 1px 6px rgba(11,32,74,.03);
@@ -35,13 +35,13 @@ body{margin:0;background:var(--bg);background-image:radial-gradient(ellipse 1200
 header{position:sticky;top:0;overflow:hidden;z-index:5;background:linear-gradient(150deg,var(--navy) 0%,var(--navy2) 55%,var(--navy3) 100%);color:#fff;padding:0;padding-top:env(safe-area-inset-top,0px);box-shadow:0 10px 32px rgba(7,20,55,.3);}
 .header-inner{max-width:760px;margin:0 auto;padding:26px 22px 18px;position:relative;display:flex;align-items:stretch;gap:28px;}
 .header-inner > .hleft{flex:1 1 auto;min-width:0;}
-header::before{content:"";position:absolute;right:-60px;top:-80px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(200,150,44,.28),transparent 68%);pointer-events:none;}
+header::before{content:"";position:absolute;right:-60px;top:-80px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(217,163,61,.28),transparent 68%);pointer-events:none;}
 header::after{content:"";position:absolute;left:-40px;bottom:-100px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.06),transparent 70%);pointer-events:none;}
 .hside{display:none;flex:none;width:230px;position:relative;align-items:center;justify-content:center;}
 .hside-ring{position:relative;width:190px;height:190px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.10),transparent 55%);}
 .hside-ring::before{content:"";position:absolute;inset:0;border-radius:50%;border:1px solid rgba(228,192,120,.35);}
 .hside-ring::after{content:"";position:absolute;inset:16px;border-radius:50%;border:1px dashed rgba(228,192,120,.25);}
-.hside-core{position:relative;width:132px;height:132px;border-radius:50%;background:linear-gradient(150deg,var(--gold) 0%,#B07F22 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-shadow:0 10px 28px rgba(200,150,44,.35),inset 0 1px 0 rgba(255,255,255,.3);}
+.hside-core{position:relative;width:132px;height:132px;border-radius:50%;background:linear-gradient(150deg,var(--gold) 0%,var(--gold-dark) 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-shadow:0 10px 28px rgba(217,163,61,.35),inset 0 1px 0 rgba(255,255,255,.3);}
 .hside-core .hs-icon{line-height:1;margin-bottom:5px;}
 .hside-core .hs-icon svg{width:28px;height:28px;color:var(--navy3);}
 .hside-core .hs-star{position:absolute;top:-4px;right:6px;width:26px;height:26px;border-radius:50%;background:linear-gradient(150deg,#fff,#EAF0FB);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(7,20,55,.25);}
@@ -53,7 +53,7 @@ header::after{content:"";position:absolute;left:-40px;bottom:-100px;width:220px;
   .hside{display:flex;}
 }
 header .hbrand{display:flex;align-items:center;gap:12px;margin-bottom:16px;position:relative;}
-header .hmark{width:46px;height:46px;flex:none;border-radius:14px;background:linear-gradient(135deg,var(--gold),#B07F22);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(200,150,44,.4),inset 0 1px 0 rgba(255,255,255,.25);}
+header .hmark{width:46px;height:46px;flex:none;border-radius:14px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(217,163,61,.4),inset 0 1px 0 rgba(255,255,255,.25);}
 header .hmark svg{width:24px;height:24px;color:#fff;filter:drop-shadow(0 1px 1px rgba(0,0,0,.15));}
 header .eyebrow{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold-soft);font-weight:700;margin-bottom:3px;}
 header h1{margin:0;font-family:var(--font-display);font-size:21px;font-weight:600;letter-spacing:.2px;line-height:1.2;}
@@ -89,7 +89,7 @@ header.compact .hside{opacity:0;pointer-events:none;}
 .tabs{display:flex;gap:6px;margin-top:16px;overflow-x:auto;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);padding:4px;border-radius:12px;position:relative;}
 .tab{flex:1;min-width:100px;text-align:center;padding:9px 10px;border-radius:9px;background:transparent;color:#C7D3EE;font-size:12.5px;font-weight:600;cursor:pointer;border:1px solid transparent;white-space:nowrap;transition:background .2s,color .2s,transform .15s;}
 .tab:hover{color:#fff;}
-.tab.active{background:linear-gradient(135deg,var(--gold),#B58A34);color:var(--navy3);box-shadow:0 3px 10px rgba(200,150,44,.4);}
+.tab.active{background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--navy3);box-shadow:0 3px 10px rgba(217,163,61,.4);}
 main{max-width:760px;margin:0 auto;padding:22px 16px 0;}
 .summary{display:flex;gap:12px;margin-bottom:18px;overflow-x:auto;}
 .sumcard{flex:1;min-width:140px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow-sm);}
@@ -102,8 +102,8 @@ main{max-width:760px;margin:0 auto;padding:22px 16px 0;}
 button{font-family:inherit;cursor:pointer;}
 .btn{background:var(--navy);color:#fff;border:none;border-radius:9px;padding:9px 16px;font-size:13px;font-weight:600;transition:transform .15s,box-shadow .15s;}
 .btn:hover{box-shadow:0 4px 12px rgba(11,61,145,.28);transform:translateY(-1px);}
-.btn.gold{background:linear-gradient(135deg,var(--gold),#B07F22);color:#fff;}
-.btn.gold:hover{box-shadow:0 4px 14px rgba(200,150,44,.4);}
+.btn.gold{background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:#fff;}
+.btn.gold:hover{box-shadow:0 4px 14px rgba(217,163,61,.4);}
 .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text);}
 .btn.sm{padding:6px 10px;font-size:12px;border-radius:7px;}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;margin-bottom:12px;box-shadow:var(--shadow-sm);transition:box-shadow .2s,transform .2s;}
@@ -134,14 +134,21 @@ button{font-family:inherit;cursor:pointer;}
 :root[data-theme="dark"] .modal h3{color:var(--gold-soft);}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .modal h3{color:var(--gold-soft);}}
 .field{margin-bottom:13px;}
-.field label{display:block;font-size:11.5px;color:var(--muted);margin-bottom:5px;font-weight:600;letter-spacing:.2px;}
-.field input, .field select, .field textarea{width:100%;padding:10px 11px;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--text);font-size:13.5px;font-family:inherit;}
+.field label, .field .field-label{display:block;font-size:11.5px;color:var(--muted);margin-bottom:5px;font-weight:600;letter-spacing:.2px;}
+.field .req-mark{color:var(--danger);margin-left:2px;}
+.field input, .field select, .field textarea{width:100%;padding:10px 11px;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--text);font-size:13.5px;font-family:inherit;transition:border-color .15s,box-shadow .15s;}
+.field input:hover, .field select:hover, .field textarea:hover{border-color:#C7D1E8;}
+.field input:focus, .field select:focus, .field textarea:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(11,61,145,.14);}
 .field textarea{resize:vertical;min-height:54px;}
+.field.invalid input, .field.invalid select, .field.invalid textarea{border-color:var(--danger);}
+.field.invalid input:focus, .field.invalid select:focus, .field.invalid textarea:focus{box-shadow:0 0 0 3px rgba(180,85,47,.14);}
+.field .field-error{display:none;font-size:11px;color:var(--danger);margin-top:5px;font-weight:600;}
+.field.invalid .field-error{display:block;}
 .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;}
 .badge{font-size:10.5px;padding:2px 9px;border-radius:20px;background:var(--ice);color:var(--muted);font-weight:600;}
 .status{font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap;}
-.status.ok{background:rgba(46,125,70,.14);color:var(--ok);}
-.status.warn{background:rgba(200,150,44,.18);color:#9c7a1f;}
+.status.ok{background:rgba(21,157,108,.14);color:var(--ok);}
+.status.warn{background:rgba(217,163,61,.18);color:#8A6A1E;}
 :root[data-theme="dark"] .status.warn{color:#E4C878;}
 .status.danger{background:rgba(180,85,47,.15);color:var(--danger);}
 .info-panel{background:var(--ice);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;margin-bottom:18px;}
@@ -154,12 +161,12 @@ button{font-family:inherit;cursor:pointer;}
 :root[data-theme="dark"] .renstra-box > h3{color:var(--gold-soft);}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .renstra-box > h3{color:var(--gold-soft);}}
 .visi-ribbon{display:flex;align-items:center;gap:14px;background:linear-gradient(120deg,var(--navy),var(--navy3));border-radius:13px;padding:16px 18px;margin-bottom:24px;position:relative;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.08);}
-.visi-ribbon::after{content:"";position:absolute;right:-30px;top:-40px;width:140px;height:140px;background:radial-gradient(circle,rgba(200,150,44,.35),transparent 70%);}
+.visi-ribbon::after{content:"";position:absolute;right:-30px;top:-40px;width:140px;height:140px;background:radial-gradient(circle,rgba(217,163,61,.35),transparent 70%);}
 .visi-ribbon .icon{font-size:28px;flex:none;position:relative;}
 .visi-ribbon .label{font-size:10px;letter-spacing:2.5px;color:var(--gold-soft);font-weight:700;margin-bottom:4px;position:relative;}
 .visi-ribbon .text{font-family:var(--font-display);font-size:14.5px;color:#fff;font-weight:500;line-height:1.45;position:relative;}
 .roadmap{position:relative;padding-left:38px;margin-bottom:24px;}
-.roadmap::before{content:"";position:absolute;left:15px;top:6px;bottom:6px;width:3px;border-radius:3px;background:linear-gradient(180deg,#3B4E8C,#1E7D8C,#C9862F,#2C7A3D);}
+.roadmap::before{content:"";position:absolute;left:15px;top:6px;bottom:6px;width:3px;border-radius:3px;background:linear-gradient(180deg,#3B4E8C,#1E7D8C,#D9A33D,#159D6C);}
 .roadmap-item{position:relative;padding-bottom:22px;}
 .roadmap-item:last-child{padding-bottom:0;}
 .roadmap-item .node{position:absolute;left:-38px;top:0;width:35px;height:35px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 0 0 4px var(--card),var(--shadow-sm);}
@@ -177,7 +184,7 @@ button{font-family:inherit;cursor:pointer;}
 .legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:11px;}
 .legend span{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);}
 .dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:none;}
-.dot.ok{background:var(--ok);} .dot.warn{background:#C99A2F;} .dot.danger{background:var(--danger);}
+.dot.ok{background:var(--ok);} .dot.warn{background:var(--gold);} .dot.danger{background:var(--danger);}
 .trendbox{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;margin-bottom:18px;box-shadow:var(--shadow-sm);}
 .trendbox h3{margin:0 0 4px;font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:700;}
 .trendbox .sub{font-size:11.5px;color:var(--muted);margin-bottom:11px;}
@@ -218,9 +225,9 @@ details.faq p{margin:0;padding:0 16px 15px;font-size:12.5px;color:var(--muted);l
 .choice-opt.sel{border-color:var(--gold);background:rgba(183,145,63,.10);}
 .field .sub-hint{font-size:10.5px;color:var(--muted);margin-top:4px;line-height:1.4;}
 .site-footer{margin:36px 0 28px;position:relative;background:linear-gradient(175deg,#FDFBF5 0%,#F6F4EC 55%,#F0EEE4 100%);border:1px solid #E7E0C9;border-top:4px solid var(--gold);border-radius:20px;padding:32px 24px 22px;color:#3C4460;box-shadow:0 14px 34px rgba(120,95,20,.08),0 2px 8px rgba(11,32,74,.04);}
-.site-footer::before{content:"";position:absolute;right:0;top:0;width:220px;height:220px;background:radial-gradient(circle,rgba(200,150,44,.10),transparent 70%);pointer-events:none;border-radius:0 20px 0 0;}
+.site-footer::before{content:"";position:absolute;right:0;top:0;width:220px;height:220px;background:radial-gradient(circle,rgba(217,163,61,.10),transparent 70%);pointer-events:none;border-radius:0 20px 0 0;}
 .site-footer .fbrand{display:flex;align-items:center;gap:12px;margin-bottom:14px;position:relative;}
-.site-footer .fbrand .mark{width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,var(--gold),#9E7220);display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 4px 12px rgba(200,150,44,.3);}
+.site-footer .fbrand .mark{width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 4px 12px rgba(217,163,61,.3);}
 .site-footer .fbrand .mark svg{width:23px;height:23px;color:#fff;}
 .site-footer .fbrand .fname{font-family:var(--font-display);font-size:16.5px;font-weight:700;color:var(--navy3);line-height:1.25;}
 .site-footer .fbrand .ftag{font-size:11px;color:#9C7A1F;font-weight:600;letter-spacing:.4px;margin-top:2px;}
@@ -240,7 +247,7 @@ details.faq p{margin:0;padding:0 16px 15px;font-size:12.5px;color:var(--muted);l
 .security-note{display:flex;align-items:flex-start;gap:8px;font-size:11px;color:#6B7291;line-height:1.6;background:#F4F6FB;border:1px solid #E3E8F4;border-radius:11px;padding:10px 12px;margin-top:14px;position:relative;}
 .security-note svg{flex:none;width:15px;height:15px;color:#8992AC;margin-top:1px;}
 .fthanks{position:relative;margin-top:22px;padding:22px 22px 20px;border-radius:16px;background:linear-gradient(150deg,#FFFDF7 0%,#FBF3DC 100%);border:1px solid #EEDFAE;overflow:hidden;box-shadow:0 2px 10px rgba(120,95,20,.06);}
-.fthanks::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--gold),#2E7D46);}
+.fthanks::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--gold),var(--ok));}
 .fthanks .ft-eyebrow{display:flex;align-items:center;gap:7px;font-size:10px;letter-spacing:2.2px;text-transform:uppercase;color:#9C7A1F;font-weight:800;margin-bottom:12px;position:relative;}
 .fthanks .ft-eyebrow svg{width:14px;height:14px;color:var(--gold);}
 .fthanks p{position:relative;margin:0 0 11px;font-size:12.3px;line-height:1.9;color:#3C4460;}
@@ -470,30 +477,31 @@ h1,h3,.card .label,.sumcard .n,.roadmap-item .ttl,.visi-ribbon .text,.site-foote
   <div class="modal">
     <h3 id="modalTitle">Tambah Progres</h3>
     <div class="field">
-      <label>Tipe Periode</label>
-      <select id="f_type">
+      <label for="f_type">Tipe Periode</label>
+      <select id="f_type" name="f_type">
         <option value="weekly">Mingguan</option>
         <option value="monthly">Bulanan</option>
         <option value="yearly">Tahunan</option>
       </select>
     </div>
-    <div class="field">
-      <label>Label Periode (mis. "Minggu 3 — Juni 2025")</label>
-      <input id="f_label" type="text" placeholder="Minggu 3 — Juni 2025">
+    <div class="field" id="f_label_field">
+      <label for="f_label">Label Periode (mis. "Minggu 3 — Juni 2025")<span class="req-mark">*</span></label>
+      <input id="f_label" name="f_label" type="text" maxlength="80" required aria-required="true" aria-describedby="f_label_error" placeholder="Minggu 3 — Juni 2025">
+      <div class="field-error" id="f_label_error" role="alert">Label periode wajib diisi.</div>
     </div>
     <div class="field">
-      <label>Target Periode Ini</label>
-      <div class="choice-row" id="f_target_row"></div>
-      <div class="sub-hint">Pilih tingkat capaian yang direncanakan untuk periode ini.</div>
+      <div class="field-label" id="f_target_label">Target Periode Ini</div>
+      <div class="choice-row" id="f_target_row" role="radiogroup" aria-labelledby="f_target_label" aria-describedby="f_target_hint"></div>
+      <div class="sub-hint" id="f_target_hint">Pilih tingkat capaian yang direncanakan untuk periode ini.</div>
     </div>
     <div class="field">
-      <label>Capaian Saat Ini</label>
-      <div class="choice-row" id="f_achieved_row"></div>
-      <div class="sub-hint">Pilih tingkat capaian sesuai skala Level 1–4 EDS yang benar-benar sudah terealisasi.</div>
+      <div class="field-label" id="f_achieved_label">Capaian Saat Ini</div>
+      <div class="choice-row" id="f_achieved_row" role="radiogroup" aria-labelledby="f_achieved_label" aria-describedby="f_achieved_hint"></div>
+      <div class="sub-hint" id="f_achieved_hint">Pilih tingkat capaian sesuai skala Level 1–4 EDS yang benar-benar sudah terealisasi.</div>
     </div>
     <div class="field">
-      <label>Catatan</label>
-      <textarea id="f_note" placeholder="Catatan singkat progres..."></textarea>
+      <label for="f_note">Catatan</label>
+      <textarea id="f_note" name="f_note" maxlength="500" placeholder="Catatan singkat progres..."></textarea>
     </div>
     <div class="modal-actions">
       <button class="btn ghost" id="cancelBtn">Batal</button>
@@ -507,8 +515,8 @@ h1,h3,.card .label,.sumcard .n,.roadmap-item .ttl,.visi-ribbon .text,.site-foote
   <div class="modal" style="max-width:380px">
     <h3>🔒 Masuk sebagai Administrator</h3>
     <div class="field">
-      <label>Token Administrator</label>
-      <input id="f_admin_token" type="password" autocomplete="off" spellcheck="false" placeholder="Masukkan token rahasia Anda">
+      <label for="f_admin_token">Token Administrator</label>
+      <input id="f_admin_token" name="f_admin_token" type="password" autocomplete="off" spellcheck="false" placeholder="Masukkan token rahasia Anda">
       <div class="sub-hint">Token ini bersifat rahasia dan hanya diberikan kepada Kepala Sekolah atau Tim Penjamin Mutu Internal (TPMI). Jangan membagikannya kepada pihak lain.</div>
     </div>
     <div class="modal-actions">
@@ -580,9 +588,16 @@ const LEVEL_OPTIONS = [
 
 function renderChoiceRow(rowId, inputName, currentVal){
   const row = document.getElementById(rowId);
+  // Jaga-jaga terhadap data lama yang nilainya tidak persis 0/25/50/75/100
+  // (mis. hasil impor manual). Tanpa ini, tidak ada opsi yang ter-checked,
+  // dan jika pengguna langsung menyimpan, nilai akan diam-diam menjadi 0.
+  const raw = Number(currentVal) || 0;
+  const nearest = LEVEL_OPTIONS.reduce((best, o) =>
+    Math.abs(o.v - raw) < Math.abs(best.v - raw) ? o : best
+  , LEVEL_OPTIONS[0]).v;
   row.innerHTML = LEVEL_OPTIONS.map(o => `
-    <label class="choice-opt${Number(currentVal)===o.v ? " sel":""}">
-      <input type="radio" name="${inputName}" value="${o.v}" ${Number(currentVal)===o.v?"checked":""}>
+    <label class="choice-opt${nearest===o.v ? " sel":""}">
+      <input type="radio" name="${inputName}" value="${o.v}" ${nearest===o.v?"checked":""}>
       <span>
         <div class="co-label">${o.label} <span style="color:var(--muted);font-weight:400;">(${o.v}%)</span></div>
         <div class="co-sub">${o.sub}</div>
@@ -742,11 +757,11 @@ function renderTrend(){
   const area = `${pad},${H-pad} ${line} ${pad+(docs.length-1)*stepX},${H-pad}`;
   const dots = pts.map((p,i) => {
     const d = docs[i];
-    return `<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="#C8962C"><title>${escapeHtml(d.label||"")}: ${Math.round(Number(d.achieved)||0)}%</title></circle>`;
+    return `<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="#D9A33D"><title>${escapeHtml(d.label||"")}: ${Math.round(Number(d.achieved)||0)}%</title></circle>`;
   }).join("");
   svg.innerHTML = `
-    <polygon points="${area}" fill="#C8962C" opacity="0.12"></polygon>
-    <polyline points="${line}" fill="none" stroke="#C8962C" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"></polyline>
+    <polygon points="${area}" fill="#D9A33D" opacity="0.12"></polygon>
+    <polyline points="${line}" fill="none" stroke="#D9A33D" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"></polyline>
     ${dots}
   `;
 }
@@ -776,11 +791,19 @@ function renderFaq(){
 
 function renderAll(){ renderSummary(); renderTrend(); renderList(); renderFaq(); }
 
+function setLabelInvalid(isInvalid){
+  const labelField = document.getElementById("f_label_field");
+  const labelInput = document.getElementById("f_label");
+  labelField.classList.toggle("invalid", isInvalid);
+  labelInput.setAttribute("aria-invalid", isInvalid ? "true" : "false");
+}
+
 function openModal(doc){
   editingId = doc ? doc.id : null;
   document.getElementById("modalTitle").textContent = doc ? "Ubah Progres" : "Tambah Progres";
   document.getElementById("f_type").value = doc ? doc.type : activeType;
   document.getElementById("f_label").value = doc ? (doc.label||"") : "";
+  setLabelInvalid(false);
   renderChoiceRow("f_target_row", "f_target", doc ? (doc.target ?? 100) : 100);
   renderChoiceRow("f_achieved_row", "f_achieved", doc ? (doc.achieved ?? 0) : 0);
   document.getElementById("f_note").value = doc ? (doc.note||"") : "";
@@ -793,6 +816,11 @@ document.getElementById("addBtn").onclick = () => openModal(null);
 document.getElementById("cancelBtn").onclick = closeModal;
 overlay.addEventListener("click", (e) => { if(e.target === overlay) closeModal(); });
 
+document.getElementById("f_label").addEventListener("input", () => setLabelInvalid(false));
+document.getElementById("f_label").addEventListener("keydown", (e) => {
+  if(e.key === "Enter"){ e.preventDefault(); document.getElementById("saveBtn").click(); }
+});
+
 document.getElementById("saveBtn").onclick = async () => {
   const data = {
     type: document.getElementById("f_type").value,
@@ -801,7 +829,13 @@ document.getElementById("saveBtn").onclick = async () => {
     achieved: getChoiceValue("f_achieved"),
     note: document.getElementById("f_note").value.trim(),
   };
-  if(!data.label){ alert("Label periode wajib diisi."); return; }
+  if(!data.label){
+    setLabelInvalid(true);
+    const labelField = document.getElementById("f_label_field");
+    document.getElementById("f_label").focus();
+    labelField.scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
   const saveBtn = document.getElementById("saveBtn");
   saveBtn.disabled = true; saveBtn.textContent = "Menyimpan...";
   try{
