@@ -37,7 +37,7 @@ header{position:sticky;top:0;overflow:hidden;z-index:5;background:linear-gradien
 .header-inner > .hleft{flex:1 1 auto;min-width:0;}
 header::before{content:"";position:absolute;right:-60px;top:-80px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(217,163,61,.28),transparent 68%);pointer-events:none;}
 header::after{content:"";position:absolute;left:-40px;bottom:-100px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.06),transparent 70%);pointer-events:none;}
-.hside{display:none;flex:none;width:230px;position:relative;align-items:center;justify-content:center;}
+.hside{display:none;flex:none;width:230px;max-height:230px;overflow:hidden;position:relative;align-items:center;justify-content:center;}
 .hside-ring{position:relative;width:190px;height:190px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.10),transparent 55%);}
 .hside-ring::before{content:"";position:absolute;inset:0;border-radius:50%;border:1px solid rgba(228,192,120,.35);}
 .hside-ring::after{content:"";position:absolute;inset:16px;border-radius:50%;border:1px dashed rgba(228,192,120,.25);}
@@ -73,7 +73,7 @@ header h1{transition:font-size .3s ease;}
 .hintro{display:grid;grid-template-rows:1fr;transition:grid-template-rows .4s cubic-bezier(.4,0,.2,1),opacity .3s ease;opacity:1;}
 .hintro-inner{overflow:hidden;min-height:0;}
 .tabs{transition:margin-top .3s ease;}
-.hside{transition:opacity .3s ease;}
+.hside{transition:opacity .3s ease,max-height .3s ease;}
 header.compact{box-shadow:0 6px 18px rgba(7,20,55,.35);}
 header.compact .header-inner{padding:14px 22px 12px;}
 header.compact .hbrand{margin-bottom:0;}
@@ -82,7 +82,7 @@ header.compact .hmark svg{width:18px;height:18px;}
 header.compact h1{font-size:16.5px;}
 header.compact .hintro{grid-template-rows:0fr;opacity:0;}
 header.compact .tabs{margin-top:10px;}
-header.compact .hside{opacity:0;pointer-events:none;}
+header.compact .hside{opacity:0;pointer-events:none;max-height:0;}
 @media (prefers-reduced-motion: reduce){
   header,.header-inner,header .hbrand,header .hmark,header .hmark svg,header h1,.hintro,.tabs,.hside{transition:none;}
 }
@@ -321,8 +321,8 @@ h1,h3,.card .label,.sumcard .n,.roadmap-item .ttl,.visi-ribbon .text,.site-foote
     </div>
   </div>
   <div class="hintro"><div class="hintro-inner">
-  <p class="welcome">Selamat datang di Portal Akuntabilitas Mutu SMKS Ciledug Al Musaddadiyah Garut — sebuah sistem pemantauan resmi yang kami hadirkan sebagai wujud komitmen terhadap tata kelola pendidikan yang transparan, terukur, dan akuntabel bagi Yayasan, Dinas Pendidikan, orang tua, serta seluruh pemangku kepentingan sekolah.</p>
-  <p>Portal ini menyajikan capaian Rencana Strategis (Renstra) 4 Tahun dan Rencana Kerja Tahunan (RKT) secara berkala, dimutakhirkan langsung oleh administrator sekolah berdasarkan hasil Evaluasi Diri Sekolah (EDS) yang terverifikasi.</p>
+  <p class="welcome">Selamat datang di Portal Akuntabilitas Mutu SMKS Ciledug Al Musaddadiyah Garut — sistem pemantauan resmi yang kami bangun sebagai wujud nyata komitmen terhadap tata kelola pendidikan yang transparan, terukur, dan akuntabel, sekaligus menjadi landasan bagi perbaikan mutu yang berkesinambungan bagi Yayasan, Dinas Pendidikan, orang tua, dan seluruh pemangku kepentingan sekolah.</p>
+  <p>Portal ini menyajikan capaian Rencana Strategis (Renstra) 4 Tahun dan Rencana Kerja Tahunan (RKT) secara berkala dan termutakhirkan, disusun berdasarkan hasil Evaluasi Diri Sekolah (EDS) yang terverifikasi.</p>
   <div class="hbadges">
     <span class="hbadge"><svg viewBox="0 0 24 24" class="filled"><path d="M12 2.5l2.9 6.2 6.8.7-5.1 4.6 1.5 6.7L12 17.8 5.9 20.7l1.5-6.7L2.3 9.4l6.8-.7L12 2.5Z"/></svg> Akreditasi A</span>
     <span class="hbadge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V7l8-4 8 4v14"/><path d="M4 21h16"/><path d="M10 21v-5h4v5"/></svg> Berdiri Sejak 1996</span>
@@ -464,7 +464,7 @@ h1,h3,.card .label,.sumcard .n,.roadmap-item .ttl,.visi-ribbon .text,.site-foote
       </div>
     </div>
     <div class="fwelcome">
-      Dashboard ini menghadirkan data capaian Renstra dan RKT secara terbuka, sejalan dengan visi <i>Menjadi SMK Pusat Keunggulan Berbasis Pesantren dan Industri Digital</i>.
+      Dashboard ini menghadirkan data capaian Renstra dan RKT secara terbuka dan dapat dipertanggungjawabkan, sebagai bagian dari ikhtiar berkelanjutan menuju visi <i>Menjadi SMK Pusat Keunggulan Berbasis Pesantren dan Industri Digital</i>.
     </div>
     <div class="fmeta">
       <div class="fitem"><span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.1-7-11.5A7 7 0 0 1 19 9.5C19 14.9 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.3"/></svg></span><span><b>Alamat</b>Jl. Mayor Syamsu No. 2, Jayaraga, Tarogong Kidul, Kabupaten Garut, Jawa Barat</span></div>
@@ -481,9 +481,9 @@ h1,h3,.card .label,.sumcard .n,.roadmap-item .ttl,.visi-ribbon .text,.site-foote
 
     <div class="fthanks">
       <div class="ft-eyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M8.2 12.6 6.5 21l5.5-3 5.5 3-1.7-8.4"/></svg> Ucapan Terima Kasih</div>
-      <p>Dengan penuh rasa syukur, kami menyampaikan <b>terima kasih yang setulus-tulusnya</b> kepada Yayasan Al‑Musaddadiyah, Dinas Pendidikan, para orang tua/wali peserta didik, dunia usaha dan industri mitra, serta seluruh pemangku kepentingan atas dukungan, kepercayaan, dan kerja sama yang selama ini diberikan kepada SMKS Ciledug Al Musaddadiyah.</p>
-      <p>Kami menyadari sepenuhnya bahwa dalam penyajian data maupun pelaksanaan program masih terdapat kekurangan di sana-sini. Untuk itu, kami <b>memohon maaf yang sebesar-besarnya</b> atas segala keterbatasan tersebut, dan senantiasa terbuka terhadap kritik serta masukan demi perbaikan yang berkelanjutan.</p>
-      <p>Dengan semangat optimisme yang tinggi, kami berkomitmen untuk terus melangkah maju, berbenah, dan berinovasi — mewujudkan pendidikan vokasi berbasis pesantren dan industri digital yang unggul, berkarakter, dan berdaya saing, demi masa depan sekolah yang lebih cerah dan membanggakan.</p>
+      <p>Setiap capaian yang tersaji dalam portal ini adalah hasil sinergi banyak pihak. Kami menyampaikan <b>apresiasi dan terima kasih yang tulus</b> kepada Yayasan Al‑Musaddadiyah, Dinas Pendidikan, para orang tua/wali peserta didik, dunia usaha dan industri mitra, serta seluruh pemangku kepentingan, atas kepercayaan, dukungan, dan kolaborasi yang telah membawa SMKS Ciledug Al Musaddadiyah pada capaian mutu yang terus berkembang hingga hari ini.</p>
+      <p>Kami menyadari bahwa perjalanan menuju mutu pendidikan yang unggul adalah proses yang berkelanjutan, dan capaian saat ini masih menyisakan ruang untuk terus disempurnakan. Atas dasar itu, kami <b>membuka diri secara aktif terhadap kritik, evaluasi, dan masukan konstruktif</b> dari seluruh pemangku kepentingan, sebagai bagian dari budaya perbaikan mutu berkelanjutan (continuous quality improvement) yang kami junjung tinggi.</p>
+      <p>Berbekal optimisme yang berpijak pada kerja nyata, kami berkomitmen untuk terus melangkah maju, berinovasi, dan menguatkan mutu di setiap lini, guna mewujudkan pendidikan vokasi berbasis pesantren dan industri digital yang unggul, berkarakter, dan berdaya saing. Inilah ikhtiar bersama kami untuk membangun masa depan generasi yang lebih cerah dan bermartabat.</p>
       <div class="ft-sign">Kepala Sekolah &amp; Tim Penjaminan Mutu Internal (TPMI)<span>SMKS Ciledug Al Musaddadiyah, Garut</span></div>
     </div>
 
