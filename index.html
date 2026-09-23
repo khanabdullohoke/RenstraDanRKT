@@ -338,6 +338,34 @@ h1,h3,.card .label,.sumcard .n,.roadmap-item .ttl,.visi-ribbon .text,.site-foote
   .renstra-box,.ref-box{padding:30px 34px;}
   .snp-grid{grid-template-columns:repeat(5,1fr);}
 }
+
+/* ====== LAPORAN CETAK / UNDUH PDF ====== */
+#printReportRoot{display:none;}
+.rp-header{display:flex;align-items:center;gap:14px;border-bottom:3px solid var(--gold);padding-bottom:14px;margin-bottom:18px;}
+.rp-header .rp-mark{width:46px;height:46px;flex:none;border-radius:12px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));display:flex;align-items:center;justify-content:center;}
+.rp-header .rp-mark svg{width:24px;height:24px;color:#fff;}
+.rp-header h1{margin:0;font-size:16px;font-family:var(--font-display);color:var(--navy3);}
+.rp-header .rp-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.rp-meta{font-size:11px;color:var(--muted);margin-bottom:18px;line-height:1.7;}
+.rp-meta b{color:var(--text);}
+.rp-section-title{font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--navy);border-bottom:1px solid var(--line);padding-bottom:6px;margin:22px 0 10px;}
+.rp-summary{display:flex;gap:10px;margin-bottom:6px;}
+.rp-sumcard{flex:1;border:1px solid var(--line);border-radius:10px;padding:10px 12px;}
+.rp-sumcard .n{font-size:19px;font-weight:700;color:var(--navy);}
+.rp-sumcard .l{font-size:10px;color:var(--muted);margin-top:2px;}
+.rp-table{width:100%;border-collapse:collapse;font-size:10.5px;margin-bottom:4px;}
+.rp-table th,.rp-table td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top;}
+.rp-table th{background:var(--ice);font-weight:700;color:var(--navy3);}
+.rp-empty-note{font-size:11px;color:var(--muted);font-style:italic;padding:6px 0;}
+.rp-footer{margin-top:26px;padding-top:12px;border-top:1px solid var(--line);font-size:10px;color:var(--muted);display:flex;justify-content:space-between;gap:10px;}
+@media print{
+  @page{ margin:14mm; }
+  html,body{background:#fff !important;}
+  body > *:not(#printReportRoot){display:none !important;}
+  #printReportRoot{display:block !important;color:#101B36;}
+  .rp-table{page-break-inside:auto;}
+  .rp-table tr{page-break-inside:avoid;}
+}
 </style>
 </head>
 <body>
@@ -485,6 +513,7 @@ h1,h3,.card .label,.sumcard .n,.roadmap-item .ttl,.visi-ribbon .text,.site-foote
         <option value="">Semua Tahun Ajaran</option>
       </select>
       <span class="auto-tag" id="autoTag" style="display:none">⚙️ Dihitung otomatis dari Mingguan</span>
+      <button class="btn ghost sm" id="downloadReportBtn" type="button">⬇ Unduh Laporan</button>
       <button class="btn gold" id="addBtn" style="display:none">+ Tambah</button>
     </div>
   </div>
@@ -1527,6 +1556,98 @@ function submitAdminLogin(){
 document.getElementById("adminSubmitBtn").onclick = submitAdminLogin;
 adminTokenInput.addEventListener("keydown", (e) => { if(e.key === "Enter") submitAdminLogin(); });
 
+// ====== LAPORAN CETAK / UNDUH (PDF via dialog cetak browser) ======
+// Tidak memakai pustaka pihak ketiga: laporan disusun sebagai HTML
+// tersembunyi lalu dicetak lewat window.print(), sehingga pengguna cukup
+// memilih "Simpan sebagai PDF" pada dialog cetak browser. Laporan mengikuti
+// filter Tahun Ajaran yang sedang aktif di layar (bila ada) dan mencakup
+// ketiga jenis periode (Mingguan, Bulanan, Tahunan) sekaligus.
+function reportSectionTable(headers, rows){
+  if(!rows.length) return `<div class="rp-empty-note">Belum ada data untuk kategori ini.</div>`;
+  return `<table class="rp-table"><thead><tr>${headers.map(h=>`<th>${escapeHtml(h)}</th>`).join("")}</tr></thead>
+    <tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+}
+function buildPrintReportHtml(){
+  const docs = getFilteredDocs();
+  const scopeLabel = activeSchoolYear ? escapeHtml(activeSchoolYear) : "Semua Tahun Ajaran";
+  const printedAt = new Intl.DateTimeFormat("id-ID", { dateStyle: "full", timeStyle: "short" }).format(new Date());
+  const printedBy = canEdit && adminName ? escapeHtml(adminName) : "Pengunjung Portal";
+
+  const weeklyDocs = docs.filter(d => d.type === "weekly").sort((a,b)=>(a.periodDate||"").localeCompare(b.periodDate||""));
+  const yearlyDocs = docs.filter(d => d.type === "yearly").sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+  const monthlyAggs = computeMonthlyAggregates();
+
+  const weeklyAvg = weeklyDocs.length ? Math.round(weeklyDocs.reduce((s,d)=>s+(Number(d.achieved)||0),0)/weeklyDocs.length) : 0;
+  const yearlyAvg = yearlyDocs.length ? Math.round(yearlyDocs.reduce((s,d)=>s+(Number(d.achieved)||0),0)/yearlyDocs.length) : 0;
+  const monthlyAvg = monthlyAggs.length ? Math.round(monthlyAggs.reduce((s,m)=>s+m.avgAchieved,0)/monthlyAggs.length) : 0;
+
+  const rowStatus = (pct, target) => { const st = statusOf(pct, target); return escapeHtml(st.text); };
+  const rowVerif = (d) => (d.verified === true || d.verified === "true") ? "Terverifikasi" : "Menunggu";
+
+  const weeklyRows = weeklyDocs.map(d => {
+    const pct = Math.max(0, Math.min(100, Number(d.achieved)||0));
+    const target = Math.max(0, Math.min(100, Number(d.target)||0));
+    return [
+      escapeHtml(d.label||"—"),
+      escapeHtml(programLabelOf(d) || "—"),
+      escapeHtml(formatDateOnly(d.periodDate) || "—"),
+      target + "%", pct + "%",
+      rowStatus(pct, target), rowVerif(d),
+      escapeHtml(d.note || "—"),
+    ];
+  });
+  const monthlyRows = monthlyAggs.map(m => [
+    escapeHtml(m.label), String(m.count), m.avgTarget + "%", m.avgAchieved + "%",
+    rowStatus(m.avgAchieved, m.avgTarget),
+  ]);
+  const yearlyRows = yearlyDocs.map(d => {
+    const pct = Math.max(0, Math.min(100, Number(d.achieved)||0));
+    const target = Math.max(0, Math.min(100, Number(d.target)||0));
+    return [
+      escapeHtml(d.label||"—"),
+      escapeHtml(d.schoolYear || schoolYearOf(d.periodDate) || "—"),
+      escapeHtml(SNP_LABEL[d.snp] || d.snp || "—"),
+      target + "%", pct + "%", edsScoreLabel(pct),
+      rowStatus(pct, target), rowVerif(d),
+    ];
+  });
+
+  return `
+    <div class="rp-header">
+      <div class="rp-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 8l10 5 10-5-10-5Z"/><path d="M6 10.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-5.5"/><path d="M22 8v6.5"/></svg></div>
+      <div>
+        <h1>Laporan Progres Renstra &amp; RKT — SMKS Ciledug Al Musaddadiyah</h1>
+        <div class="rp-sub">Garut · Terakreditasi A · Pemantauan Mutu Internal</div>
+      </div>
+    </div>
+    <div class="rp-meta">
+      <b>Cakupan Tahun Ajaran:</b> ${scopeLabel}<br>
+      <b>Dicetak pada:</b> ${escapeHtml(printedAt)}<br>
+      <b>Dicetak oleh:</b> ${printedBy}
+    </div>
+    <div class="rp-section-title">Ringkasan Capaian</div>
+    <div class="rp-summary">
+      <div class="rp-sumcard"><div class="n">${weeklyAvg}%</div><div class="l">Rata-rata Mingguan (${weeklyDocs.length} entri)</div></div>
+      <div class="rp-sumcard"><div class="n">${monthlyAvg}%</div><div class="l">Rata-rata Bulanan (${monthlyAggs.length} bulan)</div></div>
+      <div class="rp-sumcard"><div class="n">${yearlyAvg}%</div><div class="l">Rata-rata Tahunan (${yearlyDocs.length} entri)</div></div>
+    </div>
+    <div class="rp-section-title">Rincian Mingguan</div>
+    ${reportSectionTable(["Label Periode","Program RKT","Tanggal","Target","Capaian","Status","Verifikasi","Catatan"], weeklyRows)}
+    <div class="rp-section-title">Rincian Bulanan (otomatis dari Mingguan)</div>
+    ${reportSectionTable(["Bulan","Jml Entri","Target","Capaian","Status"], monthlyRows)}
+    <div class="rp-section-title">Rincian Tahunan</div>
+    ${reportSectionTable(["Label Periode","Tahun Ajaran","Standar (SNP)","Target","Capaian","Skor EDS","Status","Verifikasi"], yearlyRows)}
+    <div class="rp-footer">
+      <span>SMKS Ciledug Al Musaddadiyah Garut · Dashboard Progres Renstra &amp; RKT</span>
+      <span>Dokumen dihasilkan otomatis dari sistem pemantauan mutu internal</span>
+    </div>
+  `;
+}
+document.getElementById("downloadReportBtn").onclick = () => {
+  document.getElementById("printReportRoot").innerHTML = buildPrintReportHtml();
+  window.print();
+};
+
 async function init(){
   renderTabs();
   updateAdminUI();
@@ -1545,5 +1666,7 @@ async function init(){
 }
 init();
 </script>
+<div id="printReportRoot" aria-hidden="true"></div>
+
 </body>
 </html>
