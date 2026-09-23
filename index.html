@@ -272,8 +272,8 @@ h1,h3,.card .label,.sumcard .n,.roadmap-item .ttl,.visi-ribbon .text,.site-foote
     <div class="hside-ring">
       <div class="hside-core">
         <div class="hs-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6C10 4.5 6.5 4 4 4v13c2.5 0 6 .5 8 2 2-1.5 5.5-2 8-2V4c-2.5 0-6 .5-8 2Z"/><path d="M12 6v13"/></svg></div>
-        <div class="hs-num">2025&ndash;29</div>
-        <div class="hs-lbl">Periode Renstra</div>
+        <div class="hs-num" id="hsAvgPct">&ndash;%</div>
+        <div class="hs-lbl">Rata-rata Capaian</div>
         <div class="hs-star"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 6.2 6.8.7-5.1 4.6 1.5 6.7L12 17.8 5.9 20.7l1.5-6.7L2.3 9.4l6.8-.7L12 2.5Z"/></svg></div>
       </div>
       <div class="hside-tag">Progres Terukur</div>
@@ -483,7 +483,7 @@ h1,h3,.card .label,.sumcard .n,.roadmap-item .ttl,.visi-ribbon .text,.site-foote
 <script>
 // ====== KONFIGURASI SERVER DATA ======
 // Tempel URL endpoint server data Anda di bawah ini.
-const API_URL = "PASTE_URL_SERVER_DATA_DI_SINI";
+const API_URL = "https://script.google.com/macros/s/AKfycbxN4TtyhPCPBC4nWIPHbPy6jzoKQaIL0ta_mZjnHFLbKXaephNCIn1eMIYLwM2LyP3yjg/exec";
 
 const TYPE_LABEL = { weekly: "Mingguan", monthly: "Bulanan", yearly: "Tahunan" };
 let activeType = "weekly";
@@ -591,6 +591,12 @@ function renderSummary(){
     c.innerHTML = `<div class="n">${avg}%</div><div class="l">Rata-rata Capaian ${label}<br>${docs.length} periode tercatat</div>`;
     summaryEl.appendChild(c);
   });
+  const hsEl = document.getElementById("hsAvgPct");
+  if (hsEl){
+    hsEl.textContent = allDocs.length
+      ? Math.round(allDocs.reduce((s,d)=>s+(Number(d.achieved)||0),0)/allDocs.length) + "%"
+      : "\u2013%";
+  }
 }
 
 function renderList(){
