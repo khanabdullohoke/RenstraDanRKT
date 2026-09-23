@@ -6,17 +6,17 @@
 <title>Progres Renstra & RKT — SMKS Ciledug Al Musaddadiyah</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500&display=swap" rel="stylesheet">
 <style>
 :root{
   --navy:#0B3D91; --navy2:#0A2E6E; --navy3:#072253; --gold:#C8962C; --gold-soft:#E4C078; --ice:#EAF0FB; --slate:#5A6480;
   --bg:#F4F6FB; --card:#FFFFFF; --text:#101B36; --muted:#5F6B8C; --line:#E3E8F4;
   --danger:#B4552F; --ok:#2E7D46;
-  --font-body:'Inter',"Segoe UI",Calibri,Arial,sans-serif;
-  --font-display:'Fraunces',Georgia,serif;
-  --shadow-sm:0 1px 2px rgba(11,32,74,.05), 0 2px 8px rgba(11,32,74,.04);
-  --shadow-md:0 4px 16px rgba(11,32,74,.07), 0 1px 3px rgba(11,32,74,.05);
-  --radius:16px;
+  --font-body:'Plus Jakarta Sans',"Segoe UI",Calibri,Arial,sans-serif;
+  --font-display:'Plus Jakarta Sans',"Segoe UI",Calibri,Arial,sans-serif;
+  --shadow-sm:0 1px 2px rgba(11,32,74,.04), 0 1px 6px rgba(11,32,74,.03);
+  --shadow-md:0 6px 20px rgba(11,32,74,.08), 0 1px 3px rgba(11,32,74,.04);
+  --radius:14px;
   box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
 }
 @media (prefers-color-scheme: dark){
@@ -31,18 +31,38 @@
 }
 html{scroll-padding-top:env(safe-area-inset-top,0px);}
 *{box-sizing:border-box;}
-body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-body);-webkit-font-smoothing:antialiased;}
-header{position:relative;overflow:hidden;z-index:5;background:linear-gradient(150deg,var(--navy) 0%,var(--navy2) 55%,var(--navy3) 100%);color:#fff;padding:26px 22px 18px;padding-top:calc(26px + env(safe-area-inset-top,0px));box-shadow:0 10px 32px rgba(7,20,55,.3);}
+body{margin:0;background:var(--bg);background-image:radial-gradient(ellipse 1200px 600px at 50% 0%,rgba(11,61,145,.05),transparent 60%);color:var(--text);font-family:var(--font-body);-webkit-font-smoothing:antialiased;}
+header{position:sticky;top:0;overflow:hidden;z-index:5;background:linear-gradient(150deg,var(--navy) 0%,var(--navy2) 55%,var(--navy3) 100%);color:#fff;padding:0;padding-top:env(safe-area-inset-top,0px);box-shadow:0 10px 32px rgba(7,20,55,.3);}
+.header-inner{max-width:760px;margin:0 auto;padding:26px 22px 18px;position:relative;display:flex;align-items:stretch;gap:28px;}
+.header-inner > .hleft{flex:1 1 auto;min-width:0;}
 header::before{content:"";position:absolute;right:-60px;top:-80px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(200,150,44,.28),transparent 68%);pointer-events:none;}
 header::after{content:"";position:absolute;left:-40px;bottom:-100px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.06),transparent 70%);pointer-events:none;}
+.hside{display:none;flex:none;width:230px;position:relative;align-items:center;justify-content:center;}
+.hside-ring{position:relative;width:190px;height:190px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.10),transparent 55%);}
+.hside-ring::before{content:"";position:absolute;inset:0;border-radius:50%;border:1px solid rgba(228,192,120,.35);}
+.hside-ring::after{content:"";position:absolute;inset:16px;border-radius:50%;border:1px dashed rgba(228,192,120,.25);}
+.hside-core{position:relative;width:132px;height:132px;border-radius:50%;background:linear-gradient(150deg,var(--gold) 0%,#B07F22 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-shadow:0 10px 28px rgba(200,150,44,.35),inset 0 1px 0 rgba(255,255,255,.3);}
+.hside-core .hs-icon{line-height:1;margin-bottom:5px;}
+.hside-core .hs-icon svg{width:28px;height:28px;color:var(--navy3);}
+.hside-core .hs-star{position:absolute;top:-4px;right:6px;width:26px;height:26px;border-radius:50%;background:linear-gradient(150deg,#fff,#EAF0FB);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(7,20,55,.25);}
+.hside-core .hs-star svg{width:13px;height:13px;color:var(--gold);}
+.hside-core .hs-num{font-family:var(--font-display);font-size:19px;font-weight:800;color:var(--navy3);line-height:1.1;}
+.hside-core .hs-lbl{font-size:8.5px;letter-spacing:1.2px;text-transform:uppercase;color:var(--navy3);font-weight:700;margin-top:2px;opacity:.85;}
+.hside-tag{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;color:var(--gold-soft);background:rgba(7,20,55,.55);border:1px solid rgba(228,192,120,.3);padding:5px 14px;border-radius:20px;}
+@media (min-width:960px){
+  .hside{display:flex;}
+}
 header .hbrand{display:flex;align-items:center;gap:12px;margin-bottom:16px;position:relative;}
-header .hmark{width:44px;height:44px;flex:none;border-radius:13px;background:linear-gradient(135deg,var(--gold),#B07F22);display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 6px 16px rgba(200,150,44,.4),inset 0 1px 0 rgba(255,255,255,.25);}
+header .hmark{width:46px;height:46px;flex:none;border-radius:14px;background:linear-gradient(135deg,var(--gold),#B07F22);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(200,150,44,.4),inset 0 1px 0 rgba(255,255,255,.25);}
+header .hmark svg{width:24px;height:24px;color:#fff;filter:drop-shadow(0 1px 1px rgba(0,0,0,.15));}
 header .eyebrow{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold-soft);font-weight:700;margin-bottom:3px;}
 header h1{margin:0;font-family:var(--font-display);font-size:21px;font-weight:600;letter-spacing:.2px;line-height:1.2;}
 header p{margin:0;font-size:12.5px;color:#C7D3EE;line-height:1.6;max-width:520px;position:relative;}
 header p.welcome{font-family:var(--font-display);font-size:14.5px;font-weight:500;color:#fff;line-height:1.65;max-width:560px;margin-bottom:10px;padding-left:12px;border-left:2px solid var(--gold);position:relative;}
 header .hbadges{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px;position:relative;}
-header .hbadge{font-size:10px;font-weight:600;letter-spacing:.2px;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.14);color:#E7EDFB;white-space:nowrap;}
+header .hbadge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:600;letter-spacing:.2px;padding:4px 11px 4px 8px;border-radius:20px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.14);color:#E7EDFB;white-space:nowrap;}
+header .hbadge svg{width:12px;height:12px;flex:none;color:var(--gold-soft);}
+header .hbadge svg.filled{fill:var(--gold-soft);}
 .tabs{display:flex;gap:6px;margin-top:16px;overflow-x:auto;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);padding:4px;border-radius:12px;position:relative;}
 .tab{flex:1;min-width:100px;text-align:center;padding:9px 10px;border-radius:9px;background:transparent;color:#C7D3EE;font-size:12.5px;font-weight:600;cursor:pointer;border:1px solid transparent;white-space:nowrap;transition:background .2s,color .2s,transform .15s;}
 .tab:hover{color:#fff;}
@@ -165,41 +185,101 @@ details.faq p{margin:0;padding:0 16px 15px;font-size:12.5px;color:var(--muted);l
 .choice-opt .co-sub{font-size:11px;color:var(--muted);}
 .choice-opt.sel{border-color:var(--gold);background:rgba(183,145,63,.10);}
 .field .sub-hint{font-size:10.5px;color:var(--muted);margin-top:4px;line-height:1.4;}
-.site-footer{margin:36px 0 28px;background:linear-gradient(160deg,var(--navy3),var(--navy) 70%);border-radius:22px;padding:32px 24px 24px;color:#D6DEF2;box-shadow:var(--shadow-md);}
-.site-footer .fbrand{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
-.site-footer .fbrand .mark{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--gold),#B07F22);display:flex;align-items:center;justify-content:center;font-size:19px;flex:none;box-shadow:0 4px 12px rgba(200,150,44,.35);}
-.site-footer .fbrand .fname{font-family:var(--font-display);font-size:16.5px;font-weight:600;color:#fff;line-height:1.25;}
-.site-footer .fbrand .ftag{font-size:11px;color:var(--gold-soft);letter-spacing:.5px;margin-top:2px;}
-.site-footer .fwelcome{font-size:12.5px;line-height:1.75;color:#C7D3EE;max-width:560px;margin-bottom:20px;}
-.site-footer .fmeta{display:grid;grid-template-columns:1fr 1fr;gap:12px 18px;margin-bottom:20px;}
-.site-footer .fmeta .fitem{font-size:11.5px;color:#B7C4E4;line-height:1.5;display:flex;gap:8px;align-items:flex-start;}
-.site-footer .fmeta .fitem .fi{flex:none;opacity:.85;}
-.site-footer .fmeta .fitem b{display:block;color:#fff;font-weight:600;font-size:11.5px;}
-.site-footer .fbadges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
-.site-footer .fbadge{font-size:10.5px;font-weight:600;padding:5px 11px;border-radius:20px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#DCE4F6;}
-.site-footer .fbottom{border-top:1px solid rgba(255,255,255,.12);padding-top:16px;display:flex;flex-direction:column;gap:8px;font-size:10.5px;color:#93A2C9;text-align:center;}
-.site-footer .fbottom .fadmin{cursor:pointer;color:#93A2C9;opacity:.6;text-decoration:underline;text-underline-offset:2px;transition:opacity .15s;}
+.site-footer{margin:36px 0 28px;position:relative;background:linear-gradient(175deg,#FDFBF5 0%,#F6F4EC 55%,#F0EEE4 100%);border:1px solid #E7E0C9;border-top:4px solid var(--gold);border-radius:20px;padding:32px 24px 22px;color:#3C4460;box-shadow:0 14px 34px rgba(120,95,20,.08),0 2px 8px rgba(11,32,74,.04);}
+.site-footer::before{content:"";position:absolute;right:0;top:0;width:220px;height:220px;background:radial-gradient(circle,rgba(200,150,44,.10),transparent 70%);pointer-events:none;border-radius:0 20px 0 0;}
+.site-footer .fbrand{display:flex;align-items:center;gap:12px;margin-bottom:14px;position:relative;}
+.site-footer .fbrand .mark{width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,var(--gold),#9E7220);display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 4px 12px rgba(200,150,44,.3);}
+.site-footer .fbrand .mark svg{width:23px;height:23px;color:#fff;}
+.site-footer .fbrand .fname{font-family:var(--font-display);font-size:16.5px;font-weight:700;color:var(--navy3);line-height:1.25;}
+.site-footer .fbrand .ftag{font-size:11px;color:#9C7A1F;font-weight:600;letter-spacing:.4px;margin-top:2px;}
+.site-footer .fwelcome{font-size:12.5px;line-height:1.75;color:#5A6480;max-width:560px;margin-bottom:20px;position:relative;}
+.site-footer .fmeta{display:grid;grid-template-columns:1fr 1fr;gap:12px 18px;margin-bottom:20px;position:relative;}
+.site-footer .fmeta .fitem{font-size:11.5px;color:#5A6480;line-height:1.5;display:flex;gap:9px;align-items:flex-start;}
+.site-footer .fmeta .fitem .fi{flex:none;width:26px;height:26px;border-radius:8px;background:#FFF6E4;border:1px solid #EFE0BC;display:flex;align-items:center;justify-content:center;}
+.site-footer .fmeta .fitem .fi svg{width:13px;height:13px;color:#9C7A1F;}
+.site-footer .fmeta .fitem b{display:block;color:var(--navy);font-weight:700;font-size:11.5px;}
+.site-footer .fbadges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;position:relative;}
+.site-footer .fbadge{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;padding:6px 12px 6px 9px;border-radius:20px;background:#fff;border:1px solid #E7DFC4;color:var(--navy);box-shadow:0 1px 3px rgba(120,95,20,.06);}
+.site-footer .fbadge svg{width:12px;height:12px;color:var(--gold);flex:none;}
+.site-footer .fbottom{border-top:1px solid #E7E0C9;padding-top:16px;display:flex;flex-direction:column;gap:8px;font-size:10.5px;color:#8992AC;text-align:center;position:relative;}
+.site-footer .fbottom .fadmin{cursor:pointer;color:#8992AC;opacity:.7;text-decoration:underline;text-underline-offset:2px;transition:opacity .15s;}
 .site-footer .fbottom .fadmin:hover{opacity:1;}
+.security-note{display:flex;align-items:flex-start;gap:8px;font-size:11px;color:#6B7291;line-height:1.6;background:#F4F6FB;border:1px solid #E3E8F4;border-radius:11px;padding:10px 12px;margin-top:14px;position:relative;}
+.security-note svg{flex:none;width:15px;height:15px;color:#8992AC;margin-top:1px;}
+.fthanks{position:relative;margin-top:22px;padding:22px 22px 20px;border-radius:16px;background:linear-gradient(150deg,#FFFDF7 0%,#FBF3DC 100%);border:1px solid #EEDFAE;overflow:hidden;box-shadow:0 2px 10px rgba(120,95,20,.06);}
+.fthanks::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--gold),#2E7D46);}
+.fthanks .ft-eyebrow{display:flex;align-items:center;gap:7px;font-size:10px;letter-spacing:2.2px;text-transform:uppercase;color:#9C7A1F;font-weight:800;margin-bottom:12px;position:relative;}
+.fthanks .ft-eyebrow svg{width:14px;height:14px;color:var(--gold);}
+.fthanks p{position:relative;margin:0 0 11px;font-size:12.3px;line-height:1.9;color:#3C4460;}
+.fthanks p:last-child{margin-bottom:0;}
+.fthanks b{color:var(--navy3);font-weight:700;}
+.fthanks .ft-sign{margin-top:15px;padding-top:14px;border-top:1px dashed #E4C87A;font-size:11px;color:#9C7A1F;font-weight:700;letter-spacing:.3px;position:relative;}
+.fthanks .ft-sign span{display:block;color:#7A8199;font-weight:500;font-size:10.5px;margin-top:2px;letter-spacing:0;}
+h1,h3,.card .label,.sumcard .n,.roadmap-item .ttl,.visi-ribbon .text,.site-footer .fbrand .fname{letter-spacing:-.01em;}
+
+/* ===== Responsif: tablet & desktop ===== */
+@media (min-width:640px){
+  main{max-width:820px;padding:28px 24px 0;}
+  .header-inner{max-width:820px;padding:32px 28px 22px;padding-top:calc(32px + env(safe-area-inset-top,0px));}
+  header h1{font-size:24px;}
+  .summary{flex-wrap:wrap;}
+  .sumcard{min-width:0;flex:1 1 0;}
+  .snp-grid{grid-template-columns:repeat(4,1fr);}
+  .site-footer .fmeta{grid-template-columns:repeat(4,1fr);}
+  .roadmap{padding-left:44px;}
+}
+@media (min-width:960px){
+  main{max-width:960px;}
+  .header-inner{max-width:960px;}
+  .renstra-box,.ref-box{padding:26px 28px;}
+  .pill-row{flex-direction:row;gap:16px;}
+  .pill{flex:1 1 0;flex-direction:column;background:var(--ice);border-radius:12px;padding:14px;}
+  .pill .picon{margin-bottom:2px;}
+}
+@media (min-width:640px) and (hover:hover){
+  .tab:hover{background:rgba(255,255,255,.08);}
+}
+@media (min-width:1200px){
+  main{max-width:1140px;}
+  .header-inner{max-width:1140px;}
+  .renstra-box,.ref-box{padding:30px 34px;}
+  .snp-grid{grid-template-columns:repeat(5,1fr);}
+}
 </style>
 </head>
 <body>
 
 <header>
+<div class="header-inner">
+  <div class="hleft">
   <div class="hbrand">
-    <div class="hmark">🎓</div>
+    <div class="hmark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 8l10 5 10-5-10-5Z"/><path d="M6 10.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-5.5"/><path d="M22 8v6.5"/></svg></div>
     <div>
       <div class="eyebrow">SMKS Ciledug Al Musaddadiyah · Garut</div>
       <h1>Progres Renstra &amp; RKT</h1>
     </div>
   </div>
-  <p class="welcome">Selamat datang di ruang pemantauan mutu SMKS Ciledug Al Musaddadiyah Garut. Kami menghadirkan portal ini sebagai wujud komitmen terhadap tata kelola yang transparan dan akuntabel bagi Yayasan, Dinas Pendidikan, orang tua, dan seluruh pemangku kepentingan sekolah.</p>
-  <p>Ruang pemantauan capaian Rencana Strategis (Renstra) 4 Tahun dan Rencana Kerja Tahunan (RKT), diperbarui langsung oleh admin sekolah berdasarkan hasil Evaluasi Diri Sekolah (EDS).</p>
+  <p class="welcome">Selamat datang di Portal Akuntabilitas Mutu SMKS Ciledug Al Musaddadiyah Garut — sebuah sistem pemantauan resmi yang kami hadirkan sebagai wujud komitmen terhadap tata kelola pendidikan yang transparan, terukur, dan akuntabel bagi Yayasan, Dinas Pendidikan, orang tua, serta seluruh pemangku kepentingan sekolah.</p>
+  <p>Portal ini menyajikan capaian Rencana Strategis (Renstra) 4 Tahun dan Rencana Kerja Tahunan (RKT) secara berkala, dimutakhirkan langsung oleh administrator sekolah berdasarkan hasil Evaluasi Diri Sekolah (EDS) yang terverifikasi.</p>
   <div class="hbadges">
-    <span class="hbadge">⭐ Akreditasi A</span>
-    <span class="hbadge">🏫 Berdiri Sejak 1996</span>
-    <span class="hbadge">📊 Data Real-time</span>
+    <span class="hbadge"><svg viewBox="0 0 24 24" class="filled"><path d="M12 2.5l2.9 6.2 6.8.7-5.1 4.6 1.5 6.7L12 17.8 5.9 20.7l1.5-6.7L2.3 9.4l6.8-.7L12 2.5Z"/></svg> Akreditasi A</span>
+    <span class="hbadge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V7l8-4 8 4v14"/><path d="M4 21h16"/><path d="M10 21v-5h4v5"/></svg> Berdiri Sejak 1996</span>
+    <span class="hbadge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11"/><path d="M12 20V4"/><path d="M20 20v-7"/><path d="M2 20h20"/></svg> Data Real-time</span>
   </div>
   <div class="tabs" id="tabs"></div>
+  </div>
+  <div class="hside" aria-hidden="true">
+    <div class="hside-ring">
+      <div class="hside-core">
+        <div class="hs-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6C10 4.5 6.5 4 4 4v13c2.5 0 6 .5 8 2 2-1.5 5.5-2 8-2V4c-2.5 0-6 .5-8 2Z"/><path d="M12 6v13"/></svg></div>
+        <div class="hs-num">2025&ndash;29</div>
+        <div class="hs-lbl">Periode Renstra</div>
+        <div class="hs-star"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 6.2 6.8.7-5.1 4.6 1.5 6.7L12 17.8 5.9 20.7l1.5-6.7L2.3 9.4l6.8-.7L12 2.5Z"/></svg></div>
+      </div>
+      <div class="hside-tag">Progres Terukur</div>
+    </div>
+  </div>
+</div>
 </header>
 
 <main>
@@ -311,7 +391,7 @@ details.faq p{margin:0;padding:0 16px 15px;font-size:12.5px;color:var(--muted);l
 
   <div class="site-footer">
     <div class="fbrand">
-      <div class="mark">🎓</div>
+      <div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 8l10 5 10-5-10-5Z"/><path d="M6 10.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-5.5"/><path d="M22 8v6.5"/></svg></div>
       <div>
         <div class="fname">SMKS Ciledug Al Musaddadiyah</div>
         <div class="ftag">Terakreditasi A · Berdiri Sejak 1996 · Garut</div>
@@ -321,16 +401,26 @@ details.faq p{margin:0;padding:0 16px 15px;font-size:12.5px;color:var(--muted);l
       Dashboard ini menghadirkan data capaian Renstra dan RKT secara terbuka, sejalan dengan visi <i>Menjadi SMK Pusat Keunggulan Berbasis Pesantren dan Industri Digital</i>.
     </div>
     <div class="fmeta">
-      <div class="fitem"><span class="fi">📍</span><span><b>Alamat</b>Jl. Mayor Syamsu No. 2, Jayaraga, Tarogong Kidul, Kabupaten Garut, Jawa Barat</span></div>
-      <div class="fitem"><span class="fi">📞</span><span><b>Telepon</b>(0262) 4892181</span></div>
-      <div class="fitem"><span class="fi">🌐</span><span><b>Situs Resmi</b>smkciledugalmusaddadiyah.sch.id</span></div>
-      <div class="fitem"><span class="fi">🏫</span><span><b>NPSN</b>20209207 · Naungan Yayasan Al-Musaddadiyah Garut</span></div>
+      <div class="fitem"><span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.1-7-11.5A7 7 0 0 1 19 9.5C19 14.9 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.3"/></svg></span><span><b>Alamat</b>Jl. Mayor Syamsu No. 2, Jayaraga, Tarogong Kidul, Kabupaten Garut, Jawa Barat</span></div>
+      <div class="fitem"><span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1.1-.3 1.2.4 2.5.6 3.8.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C11.8 21 3 12.2 3 1.7 3 1.2 3.4.8 4 .8h3.5c.6 0 1 .4 1 1 0 1.3.2 2.6.6 3.8.1.4 0 .8-.3 1.1L6.6 10.8Z"/></svg></span><span><b>Telepon</b>(0262) 4892181</span></div>
+      <div class="fitem"><span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.9 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.9-3.8-9S9.5 5.6 12 3Z"/></svg></span><span><b>Situs Resmi</b>smkciledugalmusaddadiyah.sch.id</span></div>
+      <div class="fitem"><span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M8.2 12.6 6.5 21l5.5-3 5.5 3-1.7-8.4"/></svg></span><span><b>NPSN</b>20209207 · Naungan Yayasan Al-Musaddadiyah Garut</span></div>
     </div>
     <div class="fbadges">
-      <span class="fbadge">⭐ Akreditasi A — BAN-S/M</span>
-      <span class="fbadge">📚 7 Program Keahlian</span>
-      <span class="fbadge">🤝 Mitra Kampus &amp; Industri</span>
+      <span class="fbadge"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 6.2 6.8.7-5.1 4.6 1.5 6.7L12 17.8 5.9 20.7l1.5-6.7L2.3 9.4l6.8-.7L12 2.5Z"/></svg> Akreditasi A — BAN-S/M</span>
+      <span class="fbadge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5C10 3.5 6.5 3 4 3v14c2.5 0 6 .5 8 2 2-1.5 5.5-2 8-2V3c-2.5 0-6 .5-8 2Z"/><path d="M12 5v14"/></svg> 7 Program Keahlian</span>
+      <span class="fbadge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12l3 3 6-7"/><circle cx="12" cy="12" r="9"/></svg> Mitra Kampus &amp; Industri</span>
     </div>
+    <div class="security-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span>Akses perubahan data dibatasi khusus untuk pemegang Token Administrator resmi (Kepala Sekolah / TPMI) dan seluruh masukan pengguna disaring otomatis untuk mencegah penyisipan kode berbahaya. Data ditayangkan hanya untuk keperluan pemantauan mutu internal.</span></div>
+
+    <div class="fthanks">
+      <div class="ft-eyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M8.2 12.6 6.5 21l5.5-3 5.5 3-1.7-8.4"/></svg> Ucapan Terima Kasih</div>
+      <p>Dengan penuh rasa syukur, kami menyampaikan <b>terima kasih yang setulus-tulusnya</b> kepada Yayasan Al‑Musaddadiyah, Dinas Pendidikan, para orang tua/wali peserta didik, dunia usaha dan industri mitra, serta seluruh pemangku kepentingan atas dukungan, kepercayaan, dan kerja sama yang selama ini diberikan kepada SMKS Ciledug Al Musaddadiyah.</p>
+      <p>Kami menyadari sepenuhnya bahwa dalam penyajian data maupun pelaksanaan program masih terdapat kekurangan di sana-sini. Untuk itu, kami <b>memohon maaf yang sebesar-besarnya</b> atas segala keterbatasan tersebut, dan senantiasa terbuka terhadap kritik serta masukan demi perbaikan yang berkelanjutan.</p>
+      <p>Dengan semangat optimisme yang tinggi, kami berkomitmen untuk terus melangkah maju, berbenah, dan berinovasi — mewujudkan pendidikan vokasi berbasis pesantren dan industri digital yang unggul, berkarakter, dan berdaya saing, demi masa depan sekolah yang lebih cerah dan membanggakan.</p>
+      <div class="ft-sign">Kepala Sekolah &amp; Tim Penjaminan Mutu Internal (TPMI)<span>SMKS Ciledug Al Musaddadiyah, Garut</span></div>
+    </div>
+
     <div class="fbottom">
       <div>© 2026 SMKS Ciledug Al Musaddadiyah Garut · Berkomitmen untuk Pendidikan Bermutu, Terukur, dan Akuntabel</div>
       <div><span class="fadmin" id="adminBtn">masuk sebagai admin</span></div>
@@ -375,11 +465,25 @@ details.faq p{margin:0;padding:0 16px 15px;font-size:12.5px;color:var(--muted);l
   </div>
 </div>
 
+<div class="overlay" id="adminOverlay" style="display:none">
+  <div class="modal" style="max-width:380px">
+    <h3>🔒 Masuk sebagai Administrator</h3>
+    <div class="field">
+      <label>Token Administrator</label>
+      <input id="f_admin_token" type="password" autocomplete="off" spellcheck="false" placeholder="Masukkan token rahasia Anda">
+      <div class="sub-hint">Token ini bersifat rahasia dan hanya diberikan kepada Kepala Sekolah atau Tim Penjamin Mutu Internal (TPMI). Jangan membagikannya kepada pihak lain.</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="adminCancelBtn">Batal</button>
+      <button class="btn gold" id="adminSubmitBtn">Masuk</button>
+    </div>
+  </div>
+</div>
+
 <script>
-// ====== KONFIGURASI BACKEND (Google Apps Script) ======
-// 1. Deploy Code.gs sebagai Web App (Execute as: Me, Access: Anyone).
-// 2. Tempel URL deployment di bawah ini.
-const API_URL = "https://script.google.com/macros/s/AKfycbxN4TtyhPCPBC4nWIPHbPy6jzoKQaIL0ta_mZjnHFLbKXaephNCIn1eMIYLwM2LyP3yjg/exec";
+// ====== KONFIGURASI SERVER DATA ======
+// Tempel URL endpoint server data Anda di bawah ini.
+const API_URL = "PASTE_URL_SERVER_DATA_DI_SINI";
 
 const TYPE_LABEL = { weekly: "Mingguan", monthly: "Bulanan", yearly: "Tahunan" };
 let activeType = "weekly";
@@ -427,7 +531,7 @@ function getChoiceValue(inputName){
   return el ? Number(el.value) : 0;
 }
 
-// ====== KOMUNIKASI DENGAN GOOGLE APPS SCRIPT ======
+// ====== KOMUNIKASI DENGAN SERVER DATA ======
 async function apiList(){
   const res = await fetch(API_URL + "?action=list", { method: "GET" });
   const json = await res.json();
@@ -567,7 +671,7 @@ const FAQ_ITEMS = [
   ["Apa perbedaan Target dan Capaian?", "Target adalah persentase yang direncanakan untuk periode tersebut. Capaian adalah persentase yang sudah benar-benar terealisasi. Jika Capaian menyamai atau melampaui Target, pelaksanaan program dinyatakan sesuai rencana."],
   ["Apa arti status Tercapai, Dalam Proses, dan Perlu Perhatian?", "Tercapai berarti Capaian sudah menyamai atau melampaui Target. Dalam Proses berarti Capaian sudah mendekati Target (70% ke atas) namun belum tuntas. Perlu Perhatian berarti Capaian masih jauh di bawah Target dan memerlukan tindak lanjut segera."],
   ["Siapa yang berwenang mengubah data?", "Hanya pihak yang memegang Token Admin (mis. Kepala Sekolah atau Tim Penjamin Mutu Internal/TPMI) yang dapat menambah, mengubah, atau menghapus data melalui tombol \"Masuk Admin\". Pengunjung lain hanya dapat melihat dan memantau."],
-  ["Seberapa cepat data diperbarui?", "Data disimpan di Google Sheets melalui Google Apps Script. Perubahan tersimpan langsung, dan halaman menyegarkan data secara otomatis setiap 20 detik agar pengunjung lain turut melihat pembaruan terbaru."],
+  ["Seberapa cepat data diperbarui?", "Data tersimpan secara aman di server terpusat sekolah. Perubahan tersimpan langsung, dan halaman menyegarkan data secara otomatis setiap 20 detik agar pengunjung lain turut melihat pembaruan terbaru."],
   ["Apa itu EDS, Renstra, RKT, dan SNP?", "EDS (Evaluasi Diri Sekolah) adalah proses pengukuran kondisi sekolah berdasarkan 8 Standar Nasional Pendidikan (SNP). Hasil EDS menjadi dasar penyusunan Renstra (rencana 4 tahun), yang selanjutnya diturunkan menjadi RKT (rencana kerja 1 tahun berjalan)."],
   ["Bagaimana cara melihat progres per minggu, bulan, atau tahun?", "Gunakan tiga tab pada bagian atas halaman (Mingguan, Bulanan, Tahunan). Setiap tab menampilkan ringkasan rata-rata, grafik tren, dan rincian entri untuk periode yang dipilih."],
   ["Mengapa suatu periode belum menampilkan data?", "Artinya admin belum menambahkan entri untuk periode tersebut. Data akan tampil segera setelah admin memasukkannya melalui tombol \"+ Tambah\"."],
@@ -643,6 +747,16 @@ function updateAdminUI(){
   const btn = document.getElementById("adminBtn");
   if(btn) btn.textContent = canEdit ? "keluar dari mode admin" : "masuk sebagai admin";
 }
+const adminOverlay = document.getElementById("adminOverlay");
+const adminTokenInput = document.getElementById("f_admin_token");
+
+function openAdminLogin(){
+  adminTokenInput.value = "";
+  adminOverlay.style.display = "flex";
+  setTimeout(() => adminTokenInput.focus(), 50);
+}
+function closeAdminLogin(){ adminOverlay.style.display = "none"; }
+
 document.getElementById("adminBtn").onclick = () => {
   if(canEdit){
     if(!confirm("Keluar dari mode Admin?")) return;
@@ -650,19 +764,26 @@ document.getElementById("adminBtn").onclick = () => {
     canEdit = false; updateAdminUI(); renderList();
     return;
   }
-  const t = prompt("Masukkan token Admin (dari Kepala Sekolah / TPMI):");
-  if(!t) return;
-  adminToken = t.trim();
-  localStorage.setItem("renstra_admin_token", adminToken);
-  canEdit = true; updateAdminUI(); renderList();
+  openAdminLogin();
 };
+document.getElementById("adminCancelBtn").onclick = closeAdminLogin;
+adminOverlay.addEventListener("click", (e) => { if(e.target === adminOverlay) closeAdminLogin(); });
+function submitAdminLogin(){
+  const t = adminTokenInput.value.trim();
+  if(!t){ adminTokenInput.focus(); return; }
+  adminToken = t;
+  localStorage.setItem("renstra_admin_token", adminToken);
+  canEdit = true; updateAdminUI(); renderList(); closeAdminLogin();
+}
+document.getElementById("adminSubmitBtn").onclick = submitAdminLogin;
+adminTokenInput.addEventListener("keydown", (e) => { if(e.key === "Enter") submitAdminLogin(); });
 
 async function init(){
   renderTabs();
   updateAdminUI();
   renderAll();
   if(!API_URL || API_URL.indexOf("PASTE_URL") === 0){
-    listEl.innerHTML = `<div class="empty">⚠️ Backend belum terhubung.<br>Isi <b>API_URL</b> pada kode dengan URL Web App Google Apps Script Anda (lihat Code.gs).</div>`;
+    listEl.innerHTML = `<div class="empty">⚠️ Sinkronisasi data belum diaktifkan.<br>Hubungkan portal ini dengan server data internal sekolah melalui konfigurasi <b>API_URL</b> pada berkas konfigurasi sistem.</div>`;
     return;
   }
   await loadData();
