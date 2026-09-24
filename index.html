@@ -1009,6 +1009,8 @@ function adminErrorMessage(action, err, maybeSaved){
   switch(kind){
     case "network":
       return "Gagal " + action + ": perangkat tidak dapat menjangkau server data.\n\nPeriksa koneksi internet Anda lalu coba lagi. Isian formulir tidak hilang." + uncertain;
+    case "blocked":
+      return "Gagal " + action + ": server terjangkau, tetapi browser tidak diizinkan membaca jawabannya.\n\nIni BUKAN masalah internet Anda. Penyebab umum: (1) deployment Web App belum diatur \u201cAnyone\u201d, (2) kode terbaru belum di-deploy sebagai versi baru atau belum diotorisasi, (3) skrip mengalami galat sehingga Google mengirim halaman error.\n\nPeriksa dengan membuka URL Web App + ?action=ping di tab baru." + uncertain;
     case "timeout":
       return "Gagal " + action + ": server data tidak merespons tepat waktu.\n\nServer mungkin sedang lambat atau sibuk. Coba lagi beberapa saat lagi. Isian formulir tidak hilang." + uncertain;
     case "badresponse":
@@ -1031,7 +1033,7 @@ function adminErrorMessage(action, err, maybeSaved){
 // dapat melihat apakah entri sebenarnya sudah tersimpan.
 function handleWriteError(action, err, maybeSaved){
   const kind = err && err.kind;
-  const uncertain = maybeSaved && (kind === "network" || kind === "timeout" || kind === "badresponse" || kind === "http");
+  const uncertain = maybeSaved && (kind === "network" || kind === "blocked" || kind === "timeout" || kind === "badresponse" || kind === "http");
   if(kind === "auth"){
     resetAdminSession();
     alert(adminErrorMessage(action, err, false));
@@ -1135,7 +1137,11 @@ function computeMonthlyAggregates(){
 
 // ====== KOMUNIKASI DENGAN SERVER DATA ======
 // requestJson membedakan penyebab kegagalan lewat ApiError.kind:
-//   network     : fetch gagal (offline, DNS, diblokir, atau CORS akibat deployment salah)
+//   network     : fetch gagal DAN server memang tidak terjangkau (benar-benar offline)
+//   blocked     : fetch gagal tetapi server TERJANGKAU: browser menolak membaca jawabannya
+//                 (CORS). Bukan masalah internet. Penyebab umum: deployment Web App bukan
+//                 "Anyone", kode belum di-deploy sebagai versi baru / belum diotorisasi, atau
+//                 skrip galat sehingga Google mengirim halaman error tanpa header CORS
 //   timeout     : tidak ada jawaban dalam batas waktu
 //   badresponse : jawaban bukan JSON (mis. halaman login/galat HTML dari Google)
 //   http        : status HTTP galat tanpa pesan JSON
@@ -1153,6 +1159,20 @@ class ApiError extends Error {
 const READ_TIMEOUT_MS = 30000;
 const WRITE_TIMEOUT_MS = 45000; // Apps Script bisa lambat saat "cold start"
 
+// Membedakan "internet putus" dari "server terjangkau tapi jawabannya diblokir
+// browser". Permintaan mode no-cors tidak dibatasi CORS: bila berhasil (jawaban
+// opaque), berarti server terjangkau dan masalahnya ada di izin/deployment.
+async function probeReachable(){
+  let timer;
+  try{
+    const ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+    if(ctrl) timer = setTimeout(() => ctrl.abort(), 8000);
+    await fetch(API_URL + "?action=ping", Object.assign({ mode: "no-cors" }, ctrl ? { signal: ctrl.signal } : {}));
+    return true;
+  }catch(e){ return false; }
+  finally{ if(timer) clearTimeout(timer); }
+}
+
 async function requestJson(url, options, timeoutMs){
   const ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
   const timer = ctrl ? setTimeout(() => ctrl.abort(), timeoutMs) : null;
@@ -1162,7 +1182,8 @@ async function requestJson(url, options, timeoutMs){
     text = await res.text();
   }catch(e){
     if(e && e.name === "AbortError") throw new ApiError("timeout", "Tidak ada respons setelah " + Math.round(timeoutMs/1000) + " detik");
-    throw new ApiError("network", (e && e.message) ? e.message : "Gagal menjangkau server");
+    const reachable = await probeReachable();
+    throw new ApiError(reachable ? "blocked" : "network", (e && e.message) ? e.message : "Gagal menjangkau server");
   }finally{
     if(timer) clearTimeout(timer);
   }
@@ -2067,6 +2088,7 @@ function loginErrorText(err){
   switch(err && err.kind){
     case "auth": return "Token salah. Periksa huruf besar/kecil dan spasi, lalu coba lagi.";
     case "config": return "Server belum dikonfigurasi: ADMIN_TOKEN belum diisi di Script Properties Apps Script.";
+    case "blocked": return "Server terjangkau, tetapi jawabannya diblokir browser (bukan masalah internet). Biasanya deployment Web App belum \u201cAnyone\u201d atau belum di-deploy versi baru. Buka URL Web App + ?action=ping di tab baru.";
     case "network": return "Tidak dapat menghubungi server untuk memeriksa token. Periksa koneksi internet Anda.";
     case "timeout": return "Server tidak merespons tepat waktu. Coba lagi sebentar lagi.";
     case "badresponse": return "Respons server tidak dapat dibaca. Pastikan URL Web App benar dan deployment diatur \u201cAnyone\u201d.";
