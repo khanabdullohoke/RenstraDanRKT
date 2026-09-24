@@ -511,7 +511,7 @@ details.faq p{font-size:13px;}
 </div>
 </header>
 
-<div class="conn-bar"><div class="conn-pill ok" id="connPill"><span class="cp-dot"></span><span id="connPillText">Memeriksa status data…</span></div></div>
+<div class="conn-bar"><div class="conn-pill stale" id="connPill"><span class="cp-dot"></span><span id="connPillText">🟠 Memeriksa status data…</span></div></div>
 <div class="kpi-hero" id="kpiHero"></div>
 
 <main>
@@ -1302,7 +1302,7 @@ function renderPositionCard(){
   const docsThisYear = allDocs.filter(d => (d.schoolYear || schoolYearOf(d.periodDate)) === cy && (d.type==="weekly"||d.type==="yearly"));
   if(!docsThisYear.length){ el.style.display = "none"; return; }
   const achieved = Math.round(docsThisYear.reduce((s,d)=>s+(Number(d.achieved)||0),0)/docsThisYear.length);
-  const target = Math.round(docsThisYear.reduce((s,d)=>s+(Number(d.target)||0),0)/docsThisYear.length) || 85;
+  const target = Math.round(docsThisYear.reduce((s,d)=>s+(Number(d.target)||0),0)/docsThisYear.length);
   const gap = achieved - target;
   const st = statusOf(achieved, target);
   el.style.display = "block";
