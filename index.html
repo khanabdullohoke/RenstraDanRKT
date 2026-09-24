@@ -1000,7 +1000,7 @@ function formatDateTime(ts){
 // Aksi ini hanya tersedia bagi admin, sehingga alasan dari server boleh
 // ditampilkan; detail lengkap tetap dicatat ke console.
 function adminErrorMessage(action, err, maybeSaved){
-  return adminErrorBase(action, err, maybeSaved) + "\n\n[kode: " + ((err && err.kind) || "unknown") + " \u00b7 " + BUILD_ID + "]";
+  return adminErrorBase(action, err, maybeSaved) + "\n\n[kode: " + ((err && err.kind) || "unknown") + (err && err.diag ? "/" + err.diag : "") + " \u00b7 " + BUILD_ID + "]";
 }
 function adminErrorBase(action, err, maybeSaved){
   console.error("[" + action + "]", err);
@@ -1013,7 +1013,7 @@ function adminErrorBase(action, err, maybeSaved){
     case "network":
       return "Gagal " + action + ": perangkat tidak dapat menjangkau server data.\n\nPeriksa koneksi internet Anda lalu coba lagi. Isian formulir tidak hilang." + uncertain;
     case "blocked":
-      return "Gagal " + action + ": server terjangkau, tetapi browser tidak diizinkan membaca jawabannya.\n\nIni BUKAN masalah internet Anda. Penyebab umum: (1) deployment Web App belum diatur \u201cAnyone\u201d, (2) kode terbaru belum di-deploy sebagai versi baru atau belum diotorisasi, (3) skrip mengalami galat sehingga Google mengirim halaman error.\n\nPeriksa dengan membuka URL Web App + ?action=ping di tab baru." + uncertain;
+      return "Gagal " + action + ": server terjangkau, tetapi browser tidak diizinkan membaca jawabannya. Ini BUKAN masalah internet Anda.\n\n" + blockedHint(err.diag) + uncertain;
     case "timeout":
       return "Gagal " + action + ": server data tidak merespons tepat waktu.\n\nServer mungkin sedang lambat atau sibuk. Coba lagi beberapa saat lagi. Isian formulir tidak hilang." + uncertain;
     case "badresponse":
@@ -1160,7 +1160,7 @@ class ApiError extends Error {
   }
 }
 // Penanda versi berkas ini; ditampilkan pada pesan galat agar mudah dipastikan berkas mana yang sedang dimuat browser.
-const BUILD_ID = "r3c";
+const BUILD_ID = "r3e";
 const READ_TIMEOUT_MS = 30000;
 const WRITE_TIMEOUT_MS = 45000; // Apps Script bisa lambat saat "cold start"
 
@@ -1178,6 +1178,37 @@ async function probeReachable(){
   finally{ if(timer) clearTimeout(timer); }
 }
 
+// Dipanggil hanya saat server terjangkau tetapi jawaban diblokir. Membaca
+// ?action=ping secara normal (mode cors) untuk menentukan penyebabnya:
+//   get-blocked : membaca pun ditolak  -> deployment bukan "Anyone" / minta login Google
+//   get-html    : jawaban HTML bukan JSON -> URL salah / belum diotorisasi / halaman error
+//   get-ok-old  : JSON tetapi tanpa aksi ping -> server masih menjalankan kode LAMA
+//   get-ok-new  : {ok:true} -> kode baru aktif dan membaca normal; hanya POST yang diblokir
+async function diagnoseBlocked(){
+  let timer;
+  try{
+    const ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+    if(ctrl) timer = setTimeout(() => ctrl.abort(), 8000);
+    const r = await fetch(API_URL + "?action=ping", ctrl ? { signal: ctrl.signal } : {});
+    const t = await r.text();
+    let j = null;
+    try{ j = JSON.parse(t); }catch(e){}
+    if(j && j.ok === true) return "get-ok-new";
+    if(j && j.error) return "get-ok-old";
+    return "get-html";
+  }catch(e){ return "get-blocked"; }
+  finally{ if(timer) clearTimeout(timer); }
+}
+function blockedHint(diag){
+  switch(diag){
+    case "get-blocked": return "Membaca data pun diblokir: Web App belum diatur \u201cAnyone\u201d (masih meminta login Google). Deploy \u2192 Manage deployments \u2192 Edit \u2192 Who has access = Anyone \u2192 Deploy versi baru.";
+    case "get-html": return "Server mengirim halaman HTML, bukan data: URL Web App salah, skrip belum diotorisasi, atau skrip galat. Buka URL Web App + ?action=ping di tab baru untuk melihat halamannya.";
+    case "get-ok-old": return "Membaca berhasil, tetapi server masih menjalankan kode LAMA. Deploy Code.gs terbaru sebagai versi baru.";
+    case "get-ok-new": return "Membaca berhasil dan kode terbaru aktif, tetapi pengiriman (POST) diblokir. Coba mode Incognito tanpa ekstensi, atau jaringan lain; kalau tetap sama, kabari admin sistem dengan kode di bawah.";
+    default: return "Buka URL Web App + ?action=ping di tab baru untuk melihat penyebabnya.";
+  }
+}
+
 async function requestJson(url, options, timeoutMs){
   const ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
   const timer = ctrl ? setTimeout(() => ctrl.abort(), timeoutMs) : null;
@@ -1188,7 +1219,8 @@ async function requestJson(url, options, timeoutMs){
   }catch(e){
     if(e && e.name === "AbortError") throw new ApiError("timeout", "Tidak ada respons setelah " + Math.round(timeoutMs/1000) + " detik");
     const reachable = await probeReachable();
-    throw new ApiError(reachable ? "blocked" : "network", (e && e.message) ? e.message : "Gagal menjangkau server");
+    if(reachable) throw new ApiError("blocked", (e && e.message) ? e.message : "Gagal membaca jawaban server", { diag: await diagnoseBlocked() });
+    throw new ApiError("network", (e && e.message) ? e.message : "Gagal menjangkau server");
   }finally{
     if(timer) clearTimeout(timer);
   }
@@ -2090,13 +2122,13 @@ document.getElementById("adminCancelBtn").onclick = closeAdminLogin;
 adminOverlay.addEventListener("click", (e) => { if(e.target === adminOverlay) closeAdminLogin(); });
 
 function loginErrorText(err){
-  return loginErrorBase(err) + " [kode: " + ((err && err.kind) || "unknown") + " \u00b7 " + BUILD_ID + "]";
+  return loginErrorBase(err) + " [kode: " + ((err && err.kind) || "unknown") + (err && err.diag ? "/" + err.diag : "") + " \u00b7 " + BUILD_ID + "]";
 }
 function loginErrorBase(err){
   switch(err && err.kind){
     case "auth": return "Token salah. Periksa huruf besar/kecil dan spasi, lalu coba lagi.";
     case "config": return "Server belum dikonfigurasi: ADMIN_TOKEN belum diisi di Script Properties Apps Script.";
-    case "blocked": return "Server terjangkau, tetapi jawabannya diblokir browser (bukan masalah internet). Biasanya deployment Web App belum \u201cAnyone\u201d atau belum di-deploy versi baru. Buka URL Web App + ?action=ping di tab baru.";
+    case "blocked": return "Server terjangkau, tetapi jawabannya diblokir browser (bukan masalah internet). " + blockedHint(err.diag);
     case "network": return "Tidak dapat menghubungi server untuk memeriksa token. Periksa koneksi internet Anda.";
     case "timeout": return "Server tidak merespons tepat waktu. Coba lagi sebentar lagi.";
     case "badresponse": return "Respons server tidak dapat dibaca. Pastikan URL Web App benar dan deployment diatur \u201cAnyone\u201d.";
@@ -2113,17 +2145,29 @@ async function submitAdminLogin(){
   const btn = document.getElementById("adminSubmitBtn");
   loginBusy = true; btn.disabled = true; btn.textContent = "Memeriksa...";
   setAdminTokenError("");
-  try{
-    await apiVerifyToken(t); // token dicek ke server dulu; salah = tidak jadi masuk
+  const enter = () => {
     adminToken = t;
     adminName = n;
     store.set("renstra_admin_token", adminToken);
     store.set("renstra_admin_name", adminName);
     canEdit = true; updateAdminUI(); renderList(); closeAdminLogin();
+  };
+  try{
+    await apiVerifyToken(t); // token dicek ke server dulu; SALAH = tidak jadi masuk
+    enter();
   }catch(err){
     console.error("Verifikasi token gagal:", err);
-    setAdminTokenError(loginErrorText(err));
-    adminTokenInput.focus();
+    const kind = err && err.kind;
+    if(kind === "network" || kind === "blocked" || kind === "timeout" || kind === "badresponse" || kind === "http"){
+      // Server tidak dapat diperiksa (bukan berarti token salah): tetap izinkan
+      // masuk seperti sebelumnya, tetapi beri tahu terus terang bahwa token belum
+      // terverifikasi dan menyimpan kemungkinan gagal sampai koneksi ke server pulih.
+      enter();
+      alert("Anda masuk sebagai admin, tetapi token BELUM dapat diperiksa ke server.\n\n" + loginErrorText(err) + "\n\nSelama masalah ini belum teratasi, menyimpan data juga akan gagal.");
+    } else {
+      setAdminTokenError(loginErrorText(err));
+      adminTokenInput.focus();
+    }
   }finally{
     loginBusy = false; btn.disabled = false; btn.textContent = "Masuk";
   }
