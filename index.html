@@ -791,9 +791,10 @@ details.faq p{font-size:13px;}
       <input id="f_admin_name" name="f_admin_name" type="text" maxlength="60" autocomplete="off" placeholder="Nama lengkap Anda">
       <div class="sub-hint">Dicatat sebagai jejak audit pada setiap perubahan data yang Anda lakukan.</div>
     </div>
-    <div class="field">
+    <div class="field" id="f_admin_token_field">
       <label for="f_admin_token">Token Administrator</label>
-      <input id="f_admin_token" name="f_admin_token" type="password" autocomplete="off" spellcheck="false" placeholder="Masukkan token rahasia Anda">
+      <input id="f_admin_token" name="f_admin_token" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Masukkan token rahasia Anda">
+      <div class="field-error" id="f_admin_token_error" role="alert"></div>
       <div class="sub-hint">Token ini bersifat rahasia dan hanya diberikan kepada Kepala Sekolah atau Tim Penjamin Mutu Internal (TPMI). Jangan membagikannya kepada pihak lain.</div>
     </div>
     <div class="modal-actions">
@@ -813,13 +814,24 @@ let activeType = "weekly";
 let activeSchoolYear = "";
 let allDocs = [];
 let editingId = null;
-let adminToken = localStorage.getItem("renstra_admin_token") || "";
-let adminName = localStorage.getItem("renstra_admin_name") || "";
+// Akses localStorage dibungkus try/catch: pada mode privat / kebijakan privasi
+// tertentu (mis. Safari) localStorage bisa melempar error, dan tanpa
+// pembungkus ini SELURUH skrip berhenti sebelum halaman sempat tampil.
+const store = {
+  get(k){ try{ return localStorage.getItem(k) || ""; }catch(e){ return ""; } },
+  set(k, v){ try{ localStorage.setItem(k, v); }catch(e){} },
+  del(k){ try{ localStorage.removeItem(k); }catch(e){} },
+};
+let adminToken = store.get("renstra_admin_token");
+let adminName = store.get("renstra_admin_name");
 let canEdit = !!adminToken;
 let isLoading = false;
 let lastDocsSnapshot = null; // dipakai untuk menghindari render ulang DOM jika data tidak berubah
 let connState = "loading"; // "loading" | "ok" | "error"
 let hasLoadedOnce = false;  // true setelah minimal satu kali berhasil memuat data
+let loadSeq = 0;           // nomor urut permintaan muat-data; hasil permintaan usang dibuang
+let writeBusy = false;     // true selama ada permintaan tulis (simpan/hapus/verifikasi) berjalan
+let pendingClientId = "";  // ID klien untuk entri baru: membuat pengiriman ulang tidak menggandakan data
 let lastOkTs = 0;           // waktu (ms) terakhir kali berhasil sinkron ke server
 
 const tabsEl = document.getElementById("tabs");
@@ -980,14 +992,54 @@ function formatDateTime(ts){
   }catch(e){ return new Date(n).toLocaleString("id-ID"); }
 }
 
-// Pesan error yang ramah untuk ditampilkan pada aksi admin (simpan/hapus/
-// verifikasi). Detail teknis mentah dari server HANYA dicatat ke console
-// (bisa diperiksa lewat DevTools bila admin perlu menelusuri), sementara
-// yang ditampilkan ke layar selalu berupa kalimat yang jelas dan profesional
-// tanpa membocorkan detail internal backend.
-function adminErrorMessage(action, err){
-  console.error(action, err);
-  return `Gagal ${action}. Silakan periksa koneksi internet Anda dan coba lagi. Jika masalah berlanjut, hubungi administrator sistem.`;
+// Pesan error untuk aksi admin (simpan/hapus/verifikasi). Sebelumnya SEMUA
+// kegagalan — token salah, deployment belum diperbarui, server menolak data,
+// maupun internet putus — ditampilkan dengan kalimat yang sama ("periksa
+// koneksi internet"), sehingga penyebab sebenarnya tersembunyi. Sekarang
+// pesan dibedakan menurut jenis kegagalan (err.kind, lihat requestJson).
+// Aksi ini hanya tersedia bagi admin, sehingga alasan dari server boleh
+// ditampilkan; detail lengkap tetap dicatat ke console.
+function adminErrorMessage(action, err, maybeSaved){
+  console.error("[" + action + "]", err);
+  const kind = err && err.kind;
+  const detail = err && (err.serverMessage || err.message) ? String(err.serverMessage || err.message) : "";
+  const uncertain = maybeSaved
+    ? "\n\nCatatan: permintaan mungkin sempat diterima server sebelum koneksi terputus. Data dimuat ulang otomatis; bila entri sudah muncul di daftar, Anda tidak perlu menyimpan lagi."
+    : "";
+  switch(kind){
+    case "network":
+      return "Gagal " + action + ": perangkat tidak dapat menjangkau server data.\n\nPeriksa koneksi internet Anda lalu coba lagi. Isian formulir tidak hilang." + uncertain;
+    case "timeout":
+      return "Gagal " + action + ": server data tidak merespons tepat waktu.\n\nServer mungkin sedang lambat atau sibuk. Coba lagi beberapa saat lagi. Isian formulir tidak hilang." + uncertain;
+    case "badresponse":
+      return "Gagal " + action + ": server data memberi respons yang tidak dapat dibaca (bukan data JSON).\n\nPenyebab umum: URL Web App salah, deployment Apps Script belum diatur \u201cAnyone\u201d, atau kode terbaru belum di-deploy sebagai versi baru. Hubungi administrator sistem." + uncertain;
+    case "http":
+      return "Gagal " + action + ": server data menjawab dengan galat HTTP " + (err.status || "?") + "." + uncertain;
+    case "auth":
+      return "Gagal " + action + ": Token Administrator ditolak oleh server.\n\nToken yang tersimpan di browser ini salah atau sudah diganti. Anda akan diminta masuk kembali; isian formulir tidak hilang.";
+    case "config":
+      return "Gagal " + action + ": server belum dikonfigurasi (ADMIN_TOKEN belum diisi di Script Properties Apps Script). Hubungi administrator sistem.";
+    default:
+      return "Gagal " + action + ": server menolak permintaan." + (detail ? "\n\nAlasan dari server: " + detail : "");
+  }
+}
+
+// Menangani kegagalan aksi tulis secara terpusat. Token yang ditolak server
+// langsung dibersihkan dan dialog masuk admin dibuka kembali (formulir yang
+// sedang terbuka tetap utuh di belakangnya). Untuk kegagalan yang statusnya
+// tidak pasti (jaringan/timeout/respons rusak) data dimuat ulang agar admin
+// dapat melihat apakah entri sebenarnya sudah tersimpan.
+function handleWriteError(action, err, maybeSaved){
+  const kind = err && err.kind;
+  const uncertain = maybeSaved && (kind === "network" || kind === "timeout" || kind === "badresponse" || kind === "http");
+  if(kind === "auth"){
+    resetAdminSession();
+    alert(adminErrorMessage(action, err, false));
+    openAdminLogin("Token sebelumnya ditolak server. Masukkan token yang benar.");
+    return;
+  }
+  alert(adminErrorMessage(action, err, uncertain));
+  if(uncertain) loadData(true);
 }
 
 // Hanya izinkan tautan http/https untuk mencegah skema berbahaya (mis. javascript:).
@@ -1082,21 +1134,116 @@ function computeMonthlyAggregates(){
 }
 
 // ====== KOMUNIKASI DENGAN SERVER DATA ======
+// requestJson membedakan penyebab kegagalan lewat ApiError.kind:
+//   network     : fetch gagal (offline, DNS, diblokir, atau CORS akibat deployment salah)
+//   timeout     : tidak ada jawaban dalam batas waktu
+//   badresponse : jawaban bukan JSON (mis. halaman login/galat HTML dari Google)
+//   http        : status HTTP galat tanpa pesan JSON
+//   auth        : token admin ditolak server
+//   config      : ADMIN_TOKEN belum diisi di server
+//   server      : server menjawab {error: "..."} (validasi, pengecualian skrip, dll.)
+class ApiError extends Error {
+  constructor(kind, message, extra){
+    super(message);
+    this.name = "ApiError";
+    this.kind = kind;
+    if(extra) Object.assign(this, extra);
+  }
+}
+const READ_TIMEOUT_MS = 30000;
+const WRITE_TIMEOUT_MS = 45000; // Apps Script bisa lambat saat "cold start"
+
+async function requestJson(url, options, timeoutMs){
+  const ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+  const timer = ctrl ? setTimeout(() => ctrl.abort(), timeoutMs) : null;
+  let res, text;
+  try{
+    res = await fetch(url, Object.assign({}, options, ctrl ? { signal: ctrl.signal } : {}));
+    text = await res.text();
+  }catch(e){
+    if(e && e.name === "AbortError") throw new ApiError("timeout", "Tidak ada respons setelah " + Math.round(timeoutMs/1000) + " detik");
+    throw new ApiError("network", (e && e.message) ? e.message : "Gagal menjangkau server");
+  }finally{
+    if(timer) clearTimeout(timer);
+  }
+  let json;
+  try{
+    json = JSON.parse(text);
+  }catch(e){
+    throw new ApiError("badresponse", "Respons bukan JSON (HTTP " + res.status + "): " + String(text).replace(/\s+/g, " ").slice(0, 120), { status: res.status });
+  }
+  if(json && !Array.isArray(json) && json.error){
+    const msg = String(json.error);
+    let kind = "server";
+    if(json.code === "AUTH" || /token admin tidak valid/i.test(msg)) kind = "auth";
+    else if(json.code === "CONFIG" || /ADMIN_TOKEN belum diisi/i.test(msg)) kind = "config";
+    throw new ApiError(kind, msg, { serverMessage: msg, status: res.status });
+  }
+  if(!res.ok) throw new ApiError("http", "HTTP " + res.status, { status: res.status });
+  return json;
+}
+
+// Data dari Google Sheets bisa berbeda tipe dari yang diharapkan (mis. sel
+// tanggal yang dikonversi otomatis oleh Sheets menjadi objek Date, lalu
+// terserialisasi sebagai "2025-09-23T17:00:00.000Z"; label angka; dsb.).
+// Semua entri dinormalkan di satu tempat supaya sisa kode dapat mengandalkan
+// tipe yang konsisten. Tanpa ini, "Tanggal Minggu Ini" yang rusak membuat
+// agregasi Bulanan kosong dan menghapus tanggal saat verifikasi cepat.
+function normalizeDateStr(v){
+  if(v == null || v === "") return "";
+  const str = String(v).trim();
+  if(/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
+  const dt = new Date(str);
+  if(isNaN(dt.getTime())) return "";
+  try{
+    const parts = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Jakarta", year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(dt);
+    const get = (t) => (parts.find(p => p.type === t) || {}).value;
+    return get("year") + "-" + get("month") + "-" + get("day");
+  }catch(e){ return ""; }
+}
+function normalizeDoc(d){
+  const n = Object.assign({}, d);
+  n.id = String(d.id);
+  n.label = d.label == null ? "" : String(d.label);
+  n.note = d.note == null ? "" : String(d.note);
+  n.snp = d.snp == null ? "" : String(d.snp);
+  n.evidenceUrl = d.evidenceUrl == null ? "" : String(d.evidenceUrl);
+  n.periodDate = normalizeDateStr(d.periodDate);
+  n.schoolYear = d.schoolYear == null ? "" : String(d.schoolYear);
+  n.target = Number(d.target) || 0;
+  n.achieved = Number(d.achieved) || 0;
+  n.verified = d.verified === true || String(d.verified).toLowerCase() === "true";
+  return n;
+}
+
 async function apiList(){
-  const res = await fetch(API_URL + "?action=list", { method: "GET" });
-  const json = await res.json();
-  if(json.error) throw new Error(json.error);
-  return Array.isArray(json) ? json : [];
+  const json = await requestJson(API_URL + "?action=list", { method: "GET", cache: "no-store" }, READ_TIMEOUT_MS);
+  if(!Array.isArray(json)) throw new ApiError("badresponse", "Respons daftar data bukan array");
+  return json;
 }
 async function apiWrite(action, payload){
-  const res = await fetch(API_URL, {
+  return requestJson(API_URL, {
     method: "POST",
     headers: { "Content-Type": "text/plain;charset=utf-8" }, // hindari CORS preflight
     body: JSON.stringify({ action, token: adminToken, ...payload }),
-  });
-  const json = await res.json();
-  if(json.error) throw new Error(json.error);
-  return json;
+  }, WRITE_TIMEOUT_MS);
+}
+// Memeriksa token ke server SEBELUM dianggap berhasil masuk. Sebelumnya token
+// apa pun diterima begitu saja di browser dan baru ditolak saat menyimpan.
+// Backend lama belum mengenal aksi "verify", tetapi memeriksa token lebih
+// dulu; jawaban "Aksi tidak dikenal" berarti token sudah lolos.
+async function apiVerifyToken(token){
+  try{
+    await requestJson(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ action: "verify", token }),
+    }, WRITE_TIMEOUT_MS);
+    return true;
+  }catch(err){
+    if(err instanceof ApiError && err.kind === "server" && /aksi tidak dikenal/i.test(err.serverMessage || "")) return true;
+    throw err;
+  }
 }
 function renderConnStatus(){
   const pill = document.getElementById("connPill");
@@ -1118,54 +1265,71 @@ function renderConnStatus(){
   }
 }
 
-async function loadData(){
-  if(isLoading) return;
+// Menampilkan kegagalan MEMUAT data. Detail teknis mentah HANYA dicatat ke
+// console dan ditampilkan bila sedang login sebagai admin — pengunjung publik
+// tidak pernah melihat pesan error asli dari server.
+function handleLoadError(err){
+  console.error("Gagal memuat data:", err);
+  connState = "error";
+  renderConnStatus();
+  if(hasLoadedOnce){
+    // Sudah pernah berhasil memuat data sebelumnya: JANGAN timpa seluruh
+    // tampilan dengan status 0%/kosong. Biarkan data terakhir yang
+    // berhasil dimuat tetap tampil — pita status merah di atas sudah
+    // cukup memberi tahu bahwa data mungkin belum yang terbaru.
+    return;
+  }
+  const techDetail = canEdit
+    ? `<details class="err-detail">
+        <summary>Detail teknis untuk administrator</summary>
+        <code>${escapeHtml((err && err.kind ? "[" + err.kind + "] " : "") + (err && err.message ? err.message : String(err)))}</code>
+      </details>`
+    : "";
+  listEl.innerHTML = `<div class="empty state-error">
+    <div class="err-icon">📡</div>
+    <div class="err-title">Tidak Dapat Terhubung ke Server Data</div>
+    <div class="err-desc">Sistem belum berhasil memuat data terbaru dari server sekolah. Hal ini umumnya disebabkan oleh koneksi internet yang tidak stabil atau layanan server yang sedang tidak dapat diakses.</div>
+    <button class="btn ghost sm err-retry" onclick="loadData(true)">↻ Coba Lagi</button>
+    ${techDetail}
+  </div>`;
+}
+
+// force=true dipakai setelah simpan/hapus/verifikasi agar tampilan SELALU
+// disegarkan. Sebelumnya, bila polling 20 detik kebetulan sedang berjalan,
+// pemuatan ulang pasca-simpan dilewati begitu saja sehingga data yang baru
+// tersimpan tidak muncul (terkesan "tidak tersimpan"), dan jawaban polling
+// lama yang datang terlambat bisa menimpa data yang lebih baru. Kini setiap
+// permintaan bernomor urut dan hanya yang TERBARU yang boleh memperbarui layar.
+async function loadData(force){
+  if(isLoading && force !== true) return;
+  const mySeq = ++loadSeq;
   isLoading = true;
   try{
-    const fresh = await apiList();
+    let fresh;
+    try{
+      fresh = (await apiList()).map(normalizeDoc);
+    }catch(err){
+      if(mySeq !== loadSeq) return; // sudah digantikan permintaan yang lebih baru
+      handleLoadError(err);
+      return;
+    }
+    if(mySeq !== loadSeq) return;
     connState = "ok";
     hasLoadedOnce = true;
     lastOkTs = Date.now();
-    // Hindari membangun ulang seluruh DOM (list, chart, summary) jika data
-    // dari server persis sama dengan sebelumnya — mengurangi kerja render
-    // yang tidak perlu pada polling 20 detik tanpa mengubah hasil tampilan.
+    // Hindari membangun ulang seluruh DOM jika data persis sama dengan
+    // sebelumnya. Snapshot baru dicatat SETELAH render selesai, supaya
+    // render yang gagal tidak membuat pembaruan berikutnya terlewat.
     const snapshot = JSON.stringify(fresh);
     if(snapshot !== lastDocsSnapshot){
-      lastDocsSnapshot = snapshot;
       allDocs = fresh;
       renderAll();
+      lastDocsSnapshot = snapshot;
     } else {
       renderConnStatus();
     }
-  }catch(err){
-    // Detail teknis mentah HANYA dicatat ke console dan ditampilkan bila
-    // sedang login sebagai admin — pengunjung publik tidak pernah melihat
-    // pesan error asli dari server agar tidak membocorkan detail backend.
-    console.error("Gagal memuat data:", err);
-    connState = "error";
-    renderConnStatus();
-    if(hasLoadedOnce){
-      // Sudah pernah berhasil memuat data sebelumnya: JANGAN timpa seluruh
-      // tampilan dengan status 0%/kosong. Biarkan data terakhir yang
-      // berhasil dimuat tetap tampil — pita status merah di atas sudah
-      // cukup memberi tahu bahwa data mungkin belum yang terbaru.
-      return;
-    }
-    const techDetail = canEdit
-      ? `<details class="err-detail">
-          <summary>Detail teknis untuk administrator</summary>
-          <code>${escapeHtml(err && err.message ? err.message : String(err))}</code>
-        </details>`
-      : "";
-    listEl.innerHTML = `<div class="empty state-error">
-      <div class="err-icon">📡</div>
-      <div class="err-title">Tidak Dapat Terhubung ke Server Data</div>
-      <div class="err-desc">Sistem belum berhasil memuat data terbaru dari server sekolah. Hal ini umumnya disebabkan oleh koneksi internet yang tidak stabil atau layanan server yang sedang tidak dapat diakses.</div>
-      <button class="btn ghost sm err-retry" onclick="loadData()">↻ Coba Lagi</button>
-      ${techDetail}
-    </div>`;
-  }finally{
-    isLoading = false;
+  } finally {
+    if(mySeq === loadSeq) isLoading = false;
   }
 }
 
@@ -1494,8 +1658,10 @@ function renderList(){
 // verifikasi, field lain dikirim apa adanya (tidak berubah) sehingga
 // backend tidak menganggap ini sebagai perubahan isi progres.
 async function quickToggleVerify(d){
+  if(writeBusy) return;
   const nextVerified = !(d.verified === true || d.verified === "true");
   if(nextVerified && !confirm("Tandai entri \"" + (d.label||"") + "\" sebagai Terverifikasi?")) return;
+  writeBusy = true;
   try{
     await apiWrite("update", { id: d.id, data: {
       type: d.type, label: d.label, target: d.target, achieved: d.achieved,
@@ -1505,8 +1671,9 @@ async function quickToggleVerify(d){
       budgetTarget: d.budgetTarget, budgetRealized: d.budgetRealized,
       verified: nextVerified, editedBy: adminName || "Admin",
     }});
-    await loadData();
-  }catch(err){ alert(adminErrorMessage("memperbarui status verifikasi", err)); }
+    await loadData(true);
+  }catch(err){ handleWriteError("memperbarui status verifikasi", err, true); }
+  finally{ writeBusy = false; }
 }
 
 function renderMonthlyList(){
@@ -1541,7 +1708,7 @@ function renderMonthlyList(){
 }
 
 function escapeHtml(s){
-  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 }
 
 function renderTrend(){
@@ -1619,17 +1786,15 @@ function renderFaq(){
   }
 }
 
+// Setiap bagian dirender terpisah: galat pada satu bagian (mis. data aneh di
+// satu kartu) hanya dicatat ke console dan tidak lagi membatalkan bagian lain
+// — apalagi disalahartikan sebagai "gagal terhubung ke server".
 function renderAll(){
-  renderConnStatus();
-  renderKpiHero();
-  renderPositionCard();
-  renderRoadmapProgress();
-  renderSnpBars();
-  renderPriorities();
-  renderSummary();
-  renderTrend();
-  renderList();
-  renderFaq();
+  [renderConnStatus, renderKpiHero, renderPositionCard, renderRoadmapProgress,
+   renderSnpBars, renderPriorities, renderSummary, renderTrend, renderList, renderFaq
+  ].forEach(fn => {
+    try{ fn(); }catch(e){ console.error("Gagal merender " + fn.name + ":", e); }
+  });
 }
 
 function setLabelInvalid(isInvalid){
@@ -1639,7 +1804,15 @@ function setLabelInvalid(isInvalid){
   labelInput.setAttribute("aria-invalid", isInvalid ? "true" : "false");
 }
 
-function todayIso(){ return new Date().toISOString().slice(0,10); }
+// Tanggal LOKAL perangkat (bukan UTC). toISOString() memakai UTC sehingga di
+// WIB (UTC+7) antara pukul 00.00–07.00 hasilnya masih tanggal kemarin.
+function todayIso(){
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+}
+function newClientId(){
+  return "p_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 10);
+}
 
 // Menampilkan mode input yang sesuai instrumennya: Mingguan pakai slider
 // % bebas (instrumen % penyelesaian kegiatan RKT), Tahunan pakai pilihan
@@ -1689,6 +1862,7 @@ function applyTypeMode(type, doc){
 
 function openModal(doc){
   editingId = doc ? doc.id : null;
+  pendingClientId = doc ? "" : newClientId();
   renderSnpOptions();
   renderProgramOptions();
   document.getElementById("modalTitle").textContent = doc ? "Ubah Progres" : "Tambah Progres";
@@ -1730,7 +1904,7 @@ function openModal(doc){
   }
   overlay.style.display = "flex";
 }
-function closeModal(){ overlay.style.display = "none"; editingId = null; }
+function closeModal(){ overlay.style.display = "none"; editingId = null; pendingClientId = ""; }
 
 document.getElementById("addBtn").onclick = () => openModal(null);
 document.getElementById("cancelBtn").onclick = closeModal;
@@ -1811,28 +1985,39 @@ document.getElementById("saveBtn").onclick = async () => {
     return;
   }
   evidField.classList.remove("invalid");
+  if(writeBusy) return;
+  writeBusy = true;
   const saveBtn = document.getElementById("saveBtn");
   saveBtn.disabled = true; saveBtn.textContent = "Menyimpan...";
   try{
     if(editingId){
       await apiWrite("update", { id: editingId, data });
     } else {
-      await apiWrite("create", { data });
+      // clientId dibuat sekali per pembukaan formulir dan dipakai ulang pada
+      // setiap percobaan: jika jawaban server hilang di jalan padahal data
+      // sudah tersimpan, mengirim ulang TIDAK membuat entri ganda.
+      await apiWrite("create", { data: Object.assign({ clientId: pendingClientId }, data) });
     }
     closeModal();
-    await loadData();
-  }catch(err){ alert(adminErrorMessage("menyimpan data", err)); }
-  finally{ saveBtn.disabled = false; saveBtn.textContent = "Simpan"; }
+    await loadData(true);
+  }catch(err){ handleWriteError("menyimpan data", err, true); }
+  finally{ writeBusy = false; saveBtn.disabled = false; saveBtn.textContent = "Simpan"; }
 };
 
 document.getElementById("deleteBtn").onclick = async () => {
-  if(!editingId) return;
+  if(!editingId || writeBusy) return;
   if(!confirm("Hapus entri progres ini?")) return;
+  writeBusy = true;
   try{
     await apiWrite("delete", { id: editingId });
     closeModal();
-    await loadData();
-  }catch(err){ alert(adminErrorMessage("menghapus data", err)); }
+    await loadData(true);
+  }catch(err){
+    handleWriteError("menghapus data", err, true);
+    // "tidak ditemukan" berarti entri sebenarnya sudah terhapus: segarkan daftar
+    if(err && err.kind === "server") loadData(true);
+  }
+  finally{ writeBusy = false; }
 };
 
 // ====== LOGIN / LOGOUT ADMIN (token disimpan lokal di browser) ======
@@ -1846,35 +2031,72 @@ const adminTokenInput = document.getElementById("f_admin_token");
 
 const adminNameInput = document.getElementById("f_admin_name");
 
-function openAdminLogin(){
+function setAdminTokenError(msg){
+  const f = document.getElementById("f_admin_token_field");
+  const e = document.getElementById("f_admin_token_error");
+  if(!f || !e) return;
+  e.textContent = msg || "";
+  f.classList.toggle("invalid", !!msg);
+}
+function openAdminLogin(message){
   adminTokenInput.value = "";
   adminNameInput.value = adminName || "";
+  setAdminTokenError(typeof message === "string" ? message : "");
   adminOverlay.style.display = "flex";
-  setTimeout(() => adminNameInput.focus(), 50);
+  setTimeout(() => (typeof message === "string" && adminNameInput.value ? adminTokenInput : adminNameInput).focus(), 50);
 }
-function closeAdminLogin(){ adminOverlay.style.display = "none"; }
+function closeAdminLogin(){ adminOverlay.style.display = "none"; setAdminTokenError(""); }
+
+function resetAdminSession(){
+  adminToken = ""; store.del("renstra_admin_token");
+  canEdit = false; updateAdminUI(); renderList();
+}
 
 document.getElementById("adminBtn").onclick = () => {
   if(canEdit){
     if(!confirm("Keluar dari mode Admin?")) return;
-    adminToken = ""; localStorage.removeItem("renstra_admin_token");
-    canEdit = false; updateAdminUI(); renderList();
+    resetAdminSession();
     return;
   }
   openAdminLogin();
 };
 document.getElementById("adminCancelBtn").onclick = closeAdminLogin;
 adminOverlay.addEventListener("click", (e) => { if(e.target === adminOverlay) closeAdminLogin(); });
-function submitAdminLogin(){
+
+function loginErrorText(err){
+  switch(err && err.kind){
+    case "auth": return "Token salah. Periksa huruf besar/kecil dan spasi, lalu coba lagi.";
+    case "config": return "Server belum dikonfigurasi: ADMIN_TOKEN belum diisi di Script Properties Apps Script.";
+    case "network": return "Tidak dapat menghubungi server untuk memeriksa token. Periksa koneksi internet Anda.";
+    case "timeout": return "Server tidak merespons tepat waktu. Coba lagi sebentar lagi.";
+    case "badresponse": return "Respons server tidak dapat dibaca. Pastikan URL Web App benar dan deployment diatur \u201cAnyone\u201d.";
+    default: return "Gagal memeriksa token" + (err && err.serverMessage ? ": " + err.serverMessage : ".");
+  }
+}
+let loginBusy = false;
+async function submitAdminLogin(){
+  if(loginBusy) return;
   const t = adminTokenInput.value.trim();
   if(!t){ adminTokenInput.focus(); return; }
   const n = adminNameInput.value.trim();
   if(!n){ adminNameInput.focus(); return; }
-  adminToken = t;
-  adminName = n;
-  localStorage.setItem("renstra_admin_token", adminToken);
-  localStorage.setItem("renstra_admin_name", adminName);
-  canEdit = true; updateAdminUI(); renderList(); closeAdminLogin();
+  const btn = document.getElementById("adminSubmitBtn");
+  loginBusy = true; btn.disabled = true; btn.textContent = "Memeriksa...";
+  setAdminTokenError("");
+  try{
+    await apiVerifyToken(t); // token dicek ke server dulu; salah = tidak jadi masuk
+    adminToken = t;
+    adminName = n;
+    store.set("renstra_admin_token", adminToken);
+    store.set("renstra_admin_name", adminName);
+    canEdit = true; updateAdminUI(); renderList(); closeAdminLogin();
+  }catch(err){
+    console.error("Verifikasi token gagal:", err);
+    setAdminTokenError(loginErrorText(err));
+    adminTokenInput.focus();
+  }finally{
+    loginBusy = false; btn.disabled = false; btn.textContent = "Masuk";
+  }
 }
 document.getElementById("adminSubmitBtn").onclick = submitAdminLogin;
 adminTokenInput.addEventListener("keydown", (e) => { if(e.key === "Enter") submitAdminLogin(); });
