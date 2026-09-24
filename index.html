@@ -358,6 +358,114 @@ h1,h3,.card .label,.sumcard .n,.roadmap-item .ttl,.visi-ribbon .text,.site-foote
 .rp-table th{background:var(--ice);font-weight:700;color:var(--navy3);}
 .rp-empty-note{font-size:11px;color:var(--muted);font-style:italic;padding:6px 0;}
 .rp-footer{margin-top:26px;padding-top:12px;border-top:1px solid var(--line);font-size:10px;color:var(--muted);display:flex;justify-content:space-between;gap:10px;}
+
+/* ===== Status koneksi data (naik ke atas, di bawah header) ===== */
+.conn-bar{max-width:760px;margin:0 auto;padding:10px 16px 0;}
+.conn-pill{display:flex;align-items:center;gap:9px;font-size:12.5px;font-weight:600;padding:10px 14px;border-radius:12px;line-height:1.45;}
+.conn-pill .cp-dot{width:9px;height:9px;border-radius:50%;flex:none;margin-top:1px;}
+.conn-pill.ok{background:rgba(21,157,108,.10);color:var(--ok);border:1px solid rgba(21,157,108,.22);}
+.conn-pill.ok .cp-dot{background:var(--ok);}
+.conn-pill.stale{background:rgba(217,163,61,.14);color:#8A6A1E;border:1px solid rgba(217,163,61,.3);}
+:root[data-theme="dark"] .conn-pill.stale{color:#E4C878;}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .conn-pill.stale{color:#E4C878;}}
+.conn-pill.stale .cp-dot{background:var(--gold-dark);}
+.conn-pill.error{background:rgba(180,85,47,.12);color:var(--danger);border:1px solid rgba(180,85,47,.28);}
+.conn-pill.error .cp-dot{background:var(--danger);}
+.conn-pill b{font-weight:700;}
+.conn-pill .cp-sub{display:block;font-weight:500;font-size:11.5px;opacity:.9;margin-top:1px;}
+
+/* ===== KPI Utama (hero, langsung di bawah header) ===== */
+.kpi-hero{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:760px;margin:12px auto 0;padding:0 16px;}
+.kpi-box{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 15px;box-shadow:var(--shadow-sm);}
+.kpi-box .kv{font-family:var(--font-display);font-size:23px;font-weight:700;color:var(--navy);line-height:1.1;}
+:root[data-theme="dark"] .kpi-box .kv{color:var(--gold-soft);}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .kpi-box .kv{color:var(--gold-soft);}}
+.kpi-box .kv.dim{color:var(--muted);}
+.kpi-box .kl{font-size:11.5px;color:var(--muted);margin-top:4px;font-weight:600;}
+@media (min-width:640px){ .kpi-hero{grid-template-columns:repeat(4,1fr);max-width:820px;} .conn-bar{max-width:820px;padding:10px 24px 0;} }
+@media (min-width:960px){ .kpi-hero{max-width:960px;} .conn-bar{max-width:960px;} }
+@media (min-width:1200px){ .kpi-hero{max-width:1140px;} .conn-bar{max-width:1140px;} }
+
+/* ===== Posisi Sekolah Saat Ini ===== */
+.position-card{background:linear-gradient(150deg,var(--navy) 0%,var(--navy3) 100%);border-radius:18px;padding:22px 22px 20px;margin-bottom:18px;color:#fff;position:relative;overflow:hidden;box-shadow:0 14px 34px rgba(11,32,74,.22);}
+.position-card::after{content:"";position:absolute;right:-40px;top:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(217,163,61,.28),transparent 68%);pointer-events:none;}
+.position-card .pc-eyebrow{font-size:10.5px;letter-spacing:2.2px;text-transform:uppercase;color:var(--gold-soft);font-weight:700;margin-bottom:8px;position:relative;}
+.position-card .pc-phase{font-family:var(--font-display);font-size:19px;font-weight:700;margin-bottom:14px;position:relative;}
+.position-card .pc-bar{background:rgba(255,255,255,.15);border-radius:9px;height:11px;overflow:hidden;position:relative;margin-bottom:8px;}
+.position-card .pc-bar > div{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-soft));border-radius:9px;}
+.position-card .pc-row{display:flex;justify-content:space-between;font-size:12px;color:#D7E0F5;margin-bottom:14px;position:relative;}
+.position-card .pc-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;position:relative;}
+.position-card .pc-stat .n{font-family:var(--font-display);font-size:19px;font-weight:700;}
+.position-card .pc-stat .l{font-size:10.5px;color:#B9C6E8;margin-top:2px;}
+.position-card .pc-status{display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-size:12px;font-weight:700;padding:6px 13px;border-radius:20px;background:rgba(255,255,255,.12);position:relative;}
+
+/* ===== Roadmap dengan progress per fase ===== */
+.roadmap-item .rm-progress{margin-top:9px;}
+.roadmap-item .rm-bar{background:var(--ice);border-radius:7px;height:7px;overflow:hidden;margin-bottom:4px;}
+.roadmap-item .rm-bar > div{height:100%;background:linear-gradient(90deg,var(--gold),var(--navy));border-radius:7px;}
+.roadmap-item .rm-label{font-size:10.5px;color:var(--muted);font-weight:600;display:flex;justify-content:space-between;}
+.roadmap-item.current .content{position:relative;}
+.roadmap-item.current .node{box-shadow:0 0 0 4px var(--card),0 0 0 7px rgba(217,163,61,.35),var(--shadow-sm);}
+.roadmap-item .now-tag{display:inline-block;font-size:9px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--navy);background:var(--gold-soft);padding:2px 8px;border-radius:20px;margin-left:8px;vertical-align:middle;}
+:root[data-theme="dark"] .roadmap-item .now-tag{color:#1a2440;}
+
+/* ===== 8 SNP: progress bar horizontal ===== */
+.snp-bars{margin-top:6px;}
+.snp-bar-row{display:flex;align-items:center;gap:10px;padding:7px 0;}
+.snp-bar-row .sb-name{flex:0 0 150px;font-size:12px;color:var(--text);font-weight:600;}
+.snp-bar-row .sb-track{flex:1;background:var(--ice);border-radius:7px;height:9px;overflow:hidden;}
+.snp-bar-row .sb-track > div{height:100%;border-radius:7px;}
+.snp-bar-row .sb-track > div.ok{background:var(--ok);}
+.snp-bar-row .sb-track > div.warn{background:var(--gold-dark);}
+.snp-bar-row .sb-track > div.danger{background:var(--danger);}
+.snp-bar-row .sb-track > div.muted{background:var(--line);}
+.snp-bar-row .sb-val{flex:0 0 40px;text-align:right;font-size:12px;font-weight:700;color:var(--text);}
+
+/* ===== Top Prioritas Perbaikan ===== */
+.priority-box{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 18px;margin-bottom:18px;box-shadow:var(--shadow-sm);}
+.priority-box > h3{margin:0 0 4px;font-family:var(--font-display);font-size:15px;font-weight:600;color:var(--navy);}
+:root[data-theme="dark"] .priority-box > h3{color:var(--gold-soft);}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .priority-box > h3{color:var(--gold-soft);}}
+.priority-box > .sub{font-size:11.5px;color:var(--muted);margin-bottom:14px;}
+.priority-item{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-top:1px dashed var(--line);}
+.priority-item:first-of-type{border-top:none;padding-top:0;}
+.priority-item .pi-rank{flex:none;width:28px;height:28px;border-radius:9px;background:var(--ice);color:var(--navy);font-family:var(--font-display);font-weight:700;font-size:12.5px;display:flex;align-items:center;justify-content:center;}
+:root[data-theme="dark"] .priority-item .pi-rank{color:var(--gold-soft);}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .priority-item .pi-rank{color:var(--gold-soft);}}
+.priority-item .pi-body{flex:1;min-width:0;}
+.priority-item .pi-title{font-size:13.5px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.priority-item .pi-meta{font-size:11.8px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;}
+.priority-item .pi-gap{font-weight:700;color:var(--danger);}
+
+/* ===== FAQ: batasi tampilan awal ===== */
+.faq-hidden{display:none;}
+.faq-more-btn{display:block;width:100%;text-align:center;margin-top:6px;}
+
+/* ===== Dot & status netral (belum ada data) ===== */
+.dot.muted{background:var(--slate);opacity:.55;}
+.status.muted{background:rgba(90,100,128,.12);color:var(--slate);}
+:root[data-theme="dark"] .status.muted{background:rgba(148,161,199,.14);color:#C7D1E8;}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .status.muted{background:rgba(148,161,199,.14);color:#C7D1E8;}}
+
+/* ===== Tipografi diperbesar sedikit di area yang sebelumnya terlalu kecil ===== */
+.roadmap-item .ds{font-size:12.8px;}
+.roadmap-item .yr{font-size:10.8px;}
+.attrib{font-size:11.8px;}
+.legal-box ul{font-size:12.2px;}
+details.faq p{font-size:13px;}
+.site-footer .fmeta .fitem{font-size:12.2px;}
+.site-footer .fbottom{font-size:11.2px;}
+.history-item{font-size:12.2px;}
+.updated-line{font-size:11.8px;}
+
+/* ===== Footer ringkas ===== */
+.site-footer .fmeta.condensed{display:block;}
+.site-footer .fmeta.condensed .fitem{display:inline;font-size:12px;margin-right:14px;}
+.site-footer .fmeta.condensed .fitem b{display:inline;margin-right:4px;}
+.site-footer .fmeta.condensed .fi{display:none;}
+.site-footer .flinks{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;position:relative;}
+.site-footer .flinks a{font-size:11.5px;font-weight:700;color:var(--navy);text-decoration:none;background:#fff;border:1px solid #E7DFC4;padding:7px 13px;border-radius:20px;}
+.site-footer .flinks a:hover{text-decoration:underline;}
 @media print{
   @page{ margin:14mm; }
   html,body{background:#fff !important;}
@@ -381,11 +489,9 @@ h1,h3,.card .label,.sumcard .n,.roadmap-item .ttl,.visi-ribbon .text,.site-foote
     </div>
   </div>
   <div class="hintro"><div class="hintro-inner">
-  <p class="welcome">Selamat datang di Portal Akuntabilitas Mutu SMKS Ciledug Al Musaddadiyah Garut — sistem pemantauan resmi yang kami bangun sebagai wujud nyata komitmen terhadap tata kelola pendidikan yang transparan, terukur, dan akuntabel, sekaligus menjadi landasan bagi perbaikan mutu yang berkesinambungan bagi Yayasan, Dinas Pendidikan, orang tua, dan seluruh pemangku kepentingan sekolah.</p>
-  <p>Portal ini menyajikan capaian Rencana Strategis (Renstra) 4 Tahun dan Rencana Kerja Tahunan (RKT) secara berkala dan termutakhirkan, disusun berdasarkan hasil Evaluasi Diri Sekolah (EDS) yang terverifikasi.</p>
+  <p class="welcome">Portal Akuntabilitas Mutu — pemantauan capaian Renstra &amp; RKT secara transparan dan akuntabel.</p>
   <div class="hbadges">
     <span class="hbadge"><svg viewBox="0 0 24 24" class="filled"><path d="M12 2.5l2.9 6.2 6.8.7-5.1 4.6 1.5 6.7L12 17.8 5.9 20.7l1.5-6.7L2.3 9.4l6.8-.7L12 2.5Z"/></svg> Akreditasi A</span>
-    <span class="hbadge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V7l8-4 8 4v14"/><path d="M4 21h16"/><path d="M10 21v-5h4v5"/></svg> Berdiri Sejak 1996</span>
     <span class="hbadge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11"/><path d="M12 20V4"/><path d="M20 20v-7"/><path d="M2 20h20"/></svg> Data Real-time</span>
   </div>
   </div></div>
@@ -405,9 +511,16 @@ h1,h3,.card .label,.sumcard .n,.roadmap-item .ttl,.visi-ribbon .text,.site-foote
 </div>
 </header>
 
+<div class="conn-bar"><div class="conn-pill ok" id="connPill"><span class="cp-dot"></span><span id="connPillText">Memeriksa status data…</span></div></div>
+<div class="kpi-hero" id="kpiHero"></div>
+
 <main>
-  <div class="info-panel">
-    <h3>ℹ️ Panduan Singkat</h3>
+  <div class="position-card" id="positionCard" style="display:none"></div>
+
+  <details class="info-panel" style="padding:0;">
+    <summary style="padding:16px 18px;cursor:pointer;list-style:none;font-family:var(--font-display);font-size:14.5px;font-weight:600;color:var(--navy);">ℹ️ Tentang Dashboard &amp; Panduan Singkat</summary>
+    <div style="padding:0 18px 18px;">
+    <p style="font-size:12.8px;color:var(--text);line-height:1.7;margin:0 0 10px;">Selamat datang di Portal Akuntabilitas Mutu SMKS Ciledug Al Musaddadiyah Garut — sistem pemantauan resmi capaian Rencana Strategis (Renstra) 4 Tahun dan Rencana Kerja Tahunan (RKT), disusun berdasarkan hasil Evaluasi Diri Sekolah (EDS) yang terverifikasi, sebagai wujud tata kelola pendidikan yang transparan dan akuntabel bagi Yayasan, Dinas Pendidikan, orang tua, dan seluruh pemangku kepentingan.</p>
     <p><b>Target</b> adalah tingkat capaian yang direncanakan untuk periode berjalan, sedangkan <b>Capaian</b> adalah realisasi yang sudah tercapai saat ini. Semakin dekat Capaian dengan Target, semakin baik progres pelaksanaannya.</p>
     <p><b>Mingguan</b> diisi langsung memakai persentase penyelesaian kegiatan (0–100%) dan wajib dikaitkan ke salah satu <b>Program RKT resmi</b>, sedangkan <b>Tahunan</b> memakai skala resmi Level 1–4 EDS. <b>Bulanan</b> tidak diisi terpisah — dihitung otomatis dari rata-rata seluruh entri Mingguan pada bulan yang sama, agar datanya selalu konsisten dengan Mingguan.</p>
     <p>Status <b>Tercapai/Dalam Proses/Perlu Perhatian</b> dihitung otomatis dari Target vs Capaian yang diisi admin, sedangkan status <b>✔ Terverifikasi / ⏳ Menunggu Verifikasi</b> terpisah dan hanya berubah setelah bukti pendukung ditinjau — sehingga capaian yang dilaporkan tidak otomatis dianggap sah tanpa peninjauan.</p>
@@ -415,8 +528,10 @@ h1,h3,.card .label,.sumcard .n,.roadmap-item .ttl,.visi-ribbon .text,.site-foote
       <span><span class="dot ok"></span> Tercapai — sudah sesuai atau melampaui target</span>
       <span><span class="dot warn"></span> Dalam Proses — mendekati target</span>
       <span><span class="dot danger"></span> Perlu Perhatian — masih jauh dari target</span>
+      <span><span class="dot muted"></span> Belum ada data</span>
     </div>
-  </div>
+    </div>
+  </details>
   <div class="renstra-box">
     <h3>🎯 Arah Strategis Sekolah (2025–2029)</h3>
 
@@ -428,22 +543,22 @@ h1,h3,.card .label,.sumcard .n,.roadmap-item .ttl,.visi-ribbon .text,.site-foote
       </div>
     </div>
 
-    <div class="roadmap">
-      <div class="roadmap-item">
+    <div class="roadmap" id="roadmap">
+      <div class="roadmap-item" data-year="2025/2026" data-phase="Pembenahan">
         <div class="node" style="background:linear-gradient(135deg,#4A5FA8,#26377A)">🔧</div>
-        <div class="content"><div class="yr">2025 / 2026</div><div class="ttl">Pembenahan</div><div class="ds">Pembenahan sarana-prasarana & penegakan disiplin mutu berbasis hasil EDS.</div></div>
+        <div class="content"><div class="yr">2025 / 2026</div><div class="ttl">Pembenahan</div><div class="ds">Pembenahan sarana-prasarana & penegakan disiplin mutu berbasis hasil EDS.</div><div class="rm-progress"></div></div>
       </div>
-      <div class="roadmap-item">
+      <div class="roadmap-item" data-year="2026/2027" data-phase="Penguatan">
         <div class="node" style="background:linear-gradient(135deg,#2C93A3,#186B78)">⚙️</div>
-        <div class="content"><div class="yr">2026 / 2027</div><div class="ttl">Penguatan</div><div class="ds">Penguatan Kurikulum Merdeka, Teaching Factory, dan perluasan kemitraan DUDI.</div></div>
+        <div class="content"><div class="yr">2026 / 2027</div><div class="ttl">Penguatan</div><div class="ds">Penguatan Kurikulum Merdeka, Teaching Factory, dan perluasan kemitraan DUDI.</div><div class="rm-progress"></div></div>
       </div>
-      <div class="roadmap-item">
+      <div class="roadmap-item" data-year="2027/2028" data-phase="Pencapaian">
         <div class="node" style="background:linear-gradient(135deg,#D69A3E,#B4762A)">🏆</div>
-        <div class="content"><div class="yr">2027 / 2028</div><div class="ttl">Pencapaian</div><div class="ds">Pencapaian prestasi siswa, uji kompetensi keahlian, dan akreditasi unggul.</div></div>
+        <div class="content"><div class="yr">2027 / 2028</div><div class="ttl">Pencapaian</div><div class="ds">Pencapaian prestasi siswa, uji kompetensi keahlian, dan akreditasi unggul.</div><div class="rm-progress"></div></div>
       </div>
-      <div class="roadmap-item">
+      <div class="roadmap-item" data-year="2028/2029" data-phase="Pemandirian">
         <div class="node" style="background:linear-gradient(135deg,#4C9A57,#2E7038)">🚀</div>
-        <div class="content"><div class="yr">2028 / 2029</div><div class="ttl">Pemandirian</div><div class="ds">Pemandirian lulusan wirausaha, BLUD sekolah, dan LSP P1 mandiri.</div></div>
+        <div class="content"><div class="yr">2028 / 2029</div><div class="ttl">Pemandirian</div><div class="ds">Pemandirian lulusan wirausaha, BLUD sekolah, dan LSP P1 mandiri.</div><div class="rm-progress"></div></div>
       </div>
     </div>
 
@@ -474,6 +589,7 @@ h1,h3,.card .label,.sumcard .n,.roadmap-item .ttl,.visi-ribbon .text,.site-foote
       <div class="snp-tag"><b>8.</b> Standar Penilaian</div>
     </div>
     <div class="sub" style="margin-bottom:10px;">Indikator tambahan khusus SMK: <b>Kemitraan Industri (DUDI)</b> dan <b>Tingkat Keterserapan Lulusan</b>.</div>
+    <div class="snp-bars" id="snpBars"></div>
     <table class="level-table">
       <tr><th>Level</th><th>Kategori Resmi EDS</th><th>Keterangan</th></tr>
       <tr><td class="lv">1</td><td>Belum Memenuhi</td><td>Standar belum terpenuhi, perlu intervensi segera.</td></tr>
@@ -499,6 +615,12 @@ h1,h3,.card .label,.sumcard .n,.roadmap-item .ttl,.visi-ribbon .text,.site-foote
     </div>
   </div>
 
+  <div class="priority-box" id="priorityBox" style="display:none">
+    <h3>🎯 Prioritas Perbaikan</h3>
+    <div class="sub">Standar/program dengan gap terbesar antara Target dan Capaian — perlu tindak lanjut lebih dulu.</div>
+    <div id="priorityList"></div>
+  </div>
+
   <div class="summary" id="summary"></div>
   <div class="lastupdate-global" id="lastUpdateGlobal" style="display:none"></div>
   <div class="trendbox" id="trendbox" style="display:none">
@@ -519,8 +641,9 @@ h1,h3,.card .label,.sumcard .n,.roadmap-item .ttl,.visi-ribbon .text,.site-foote
   </div>
   <div id="list"></div>
 
-  <div class="section-title">Pertanyaan yang Sering Diajukan</div>
+  <div class="section-title">Bantuan &amp; Dokumentasi</div>
   <div id="faq"></div>
+  <button class="btn ghost sm faq-more-btn" id="faqMoreBtn" style="display:none">Lihat semua FAQ →</button>
 
   <div class="site-footer">
     <div class="fbrand">
@@ -531,18 +654,12 @@ h1,h3,.card .label,.sumcard .n,.roadmap-item .ttl,.visi-ribbon .text,.site-foote
       </div>
     </div>
     <div class="fwelcome">
-      Dashboard ini menghadirkan data capaian Renstra dan RKT secara terbuka dan dapat dipertanggungjawabkan, sebagai bagian dari ikhtiar berkelanjutan menuju visi <i>Menjadi SMK Pusat Keunggulan Berbasis Pesantren dan Industri Digital</i>.
+      Terakreditasi A · Berdiri 1996 · Jl. Mayor Syamsu No. 2, Jayaraga, Garut · NPSN 20209207
     </div>
-    <div class="fmeta">
-      <div class="fitem"><span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.1-7-11.5A7 7 0 0 1 19 9.5C19 14.9 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.3"/></svg></span><span><b>Alamat</b>Jl. Mayor Syamsu No. 2, Jayaraga, Tarogong Kidul, Kabupaten Garut, Jawa Barat</span></div>
-      <div class="fitem"><span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1.1-.3 1.2.4 2.5.6 3.8.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C11.8 21 3 12.2 3 1.7 3 1.2 3.4.8 4 .8h3.5c.6 0 1 .4 1 1 0 1.3.2 2.6.6 3.8.1.4 0 .8-.3 1.1L6.6 10.8Z"/></svg></span><span><b>Telepon</b>(0262) 4892181</span></div>
-      <div class="fitem"><span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.9 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.9-3.8-9S9.5 5.6 12 3Z"/></svg></span><span><b>Situs Resmi</b>smkciledugalmusaddadiyah.sch.id</span></div>
-      <div class="fitem"><span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M8.2 12.6 6.5 21l5.5-3 5.5 3-1.7-8.4"/></svg></span><span><b>NPSN</b>20209207 · Naungan Yayasan Al-Musaddadiyah Garut</span></div>
-    </div>
-    <div class="fbadges">
-      <span class="fbadge"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.9 6.2 6.8.7-5.1 4.6 1.5 6.7L12 17.8 5.9 20.7l1.5-6.7L2.3 9.4l6.8-.7L12 2.5Z"/></svg> Akreditasi A — BAN-S/M</span>
-      <span class="fbadge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5C10 3.5 6.5 3 4 3v14c2.5 0 6 .5 8 2 2-1.5 5.5-2 8-2V3c-2.5 0-6 .5-8 2Z"/><path d="M12 5v14"/></svg> 7 Program Keahlian</span>
-      <span class="fbadge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12l3 3 6-7"/><circle cx="12" cy="12" r="9"/></svg> Mitra Kampus &amp; Industri</span>
+    <div class="flinks">
+      <a href="https://smkciledugalmusaddadiyah.sch.id" target="_blank" rel="noopener noreferrer">🌐 Situs Resmi</a>
+      <a href="tel:+622624892181">📞 (0262) 4892181</a>
+      <a href="#faq">📄 Dokumentasi &amp; FAQ</a>
     </div>
     <div class="security-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span>Akses perubahan data dibatasi khusus untuk pemegang Token Administrator resmi (Kepala Sekolah / TPMI) dan seluruh masukan pengguna disaring otomatis untuk mencegah penyisipan kode berbahaya. Data ditayangkan hanya untuk keperluan pemantauan mutu internal.</span></div>
 
@@ -701,6 +818,9 @@ let adminName = localStorage.getItem("renstra_admin_name") || "";
 let canEdit = !!adminToken;
 let isLoading = false;
 let lastDocsSnapshot = null; // dipakai untuk menghindari render ulang DOM jika data tidak berubah
+let connState = "loading"; // "loading" | "ok" | "error"
+let hasLoadedOnce = false;  // true setelah minimal satu kali berhasil memuat data
+let lastOkTs = 0;           // waktu (ms) terakhir kali berhasil sinkron ke server
 
 const tabsEl = document.getElementById("tabs");
 const listEl = document.getElementById("list");
@@ -978,11 +1098,34 @@ async function apiWrite(action, payload){
   if(json.error) throw new Error(json.error);
   return json;
 }
+function renderConnStatus(){
+  const pill = document.getElementById("connPill");
+  const text = document.getElementById("connPillText");
+  if(!pill || !text) return;
+  pill.classList.remove("ok","stale","error");
+  if(connState === "ok"){
+    pill.classList.add("ok");
+    text.innerHTML = "🟢 <b>Data diperbarui</b> " + escapeHtml(formatDateTime(lastOkTs));
+  } else if(connState === "error" && hasLoadedOnce){
+    pill.classList.add("error");
+    text.innerHTML = "🔴 <b>Koneksi data sedang bermasalah</b><span class=\"cp-sub\">Menampilkan data terakhir yang berhasil dimuat: " + escapeHtml(formatDateTime(lastOkTs)) + "</span>";
+  } else if(connState === "error"){
+    pill.classList.add("error");
+    text.innerHTML = "🔴 <b>Tidak dapat terhubung ke server data</b>";
+  } else {
+    pill.classList.add("stale");
+    text.textContent = "🟠 Memeriksa status data…";
+  }
+}
+
 async function loadData(){
   if(isLoading) return;
   isLoading = true;
   try{
     const fresh = await apiList();
+    connState = "ok";
+    hasLoadedOnce = true;
+    lastOkTs = Date.now();
     // Hindari membangun ulang seluruh DOM (list, chart, summary) jika data
     // dari server persis sama dengan sebelumnya — mengurangi kerja render
     // yang tidak perlu pada polling 20 detik tanpa mengubah hasil tampilan.
@@ -991,12 +1134,23 @@ async function loadData(){
       lastDocsSnapshot = snapshot;
       allDocs = fresh;
       renderAll();
+    } else {
+      renderConnStatus();
     }
   }catch(err){
     // Detail teknis mentah HANYA dicatat ke console dan ditampilkan bila
     // sedang login sebagai admin — pengunjung publik tidak pernah melihat
     // pesan error asli dari server agar tidak membocorkan detail backend.
     console.error("Gagal memuat data:", err);
+    connState = "error";
+    renderConnStatus();
+    if(hasLoadedOnce){
+      // Sudah pernah berhasil memuat data sebelumnya: JANGAN timpa seluruh
+      // tampilan dengan status 0%/kosong. Biarkan data terakhir yang
+      // berhasil dimuat tetap tampil — pita status merah di atas sudah
+      // cukup memberi tahu bahwa data mungkin belum yang terbaru.
+      return;
+    }
     const techDetail = canEdit
       ? `<details class="err-detail">
           <summary>Detail teknis untuk administrator</summary>
@@ -1034,10 +1188,19 @@ function renderTabs(){
   });
 }
 
-function sumCard(avg, label, sub){
+// Kartu ringkasan dengan pembedaan tegas: "0%" hanya boleh tampil jika
+// benar-benar ada entri dengan capaian 0%. Jika belum pernah berhasil
+// memuat data dari server sama sekali (mis. server sedang bermasalah),
+// tampilkan "—" + keterangan, BUKAN "0%" — supaya tidak terbaca sebagai
+// "sekolah gagal mencapai target" padahal datanya belum termuat.
+function sumCard(avg, label, sub, noData){
   const c = document.createElement("div");
   c.className = "sumcard";
-  c.innerHTML = `<div class="n">${avg}%</div><div class="l">${label}<br>${sub}</div>`;
+  if(noData){
+    c.innerHTML = `<div class="n dim-n" style="color:var(--muted)">–</div><div class="l">${label}<br>🔴 Data tidak dapat diperbarui</div>`;
+  } else {
+    c.innerHTML = `<div class="n">${avg}%</div><div class="l">${label}<br>${sub}</div>`;
+  }
   return c;
 }
 
@@ -1045,27 +1208,28 @@ function renderSummary(){
   renderYearFilterOptions();
   summaryEl.innerHTML = "";
   const scoped = getFilteredDocs();
+  const noData = !hasLoadedOnce; // belum pernah berhasil sinkron ke server sama sekali
 
   const weeklyDocs = scoped.filter(d => d.type === "weekly");
   const weeklyAvg = weeklyDocs.length ? Math.round(weeklyDocs.reduce((s,d)=>s+(Number(d.achieved)||0),0)/weeklyDocs.length) : 0;
-  summaryEl.appendChild(sumCard(weeklyAvg, "Rata-rata Capaian Mingguan", `${weeklyDocs.length} entri tercatat`));
+  summaryEl.appendChild(sumCard(weeklyAvg, "Rata-rata Capaian Mingguan", `${weeklyDocs.length} entri tercatat`, noData));
 
   const monthlyAggs = computeMonthlyAggregates();
   const monthlyAvg = monthlyAggs.length ? Math.round(monthlyAggs.reduce((s,m)=>s+m.avgAchieved,0)/monthlyAggs.length) : 0;
-  summaryEl.appendChild(sumCard(monthlyAvg, "Rata-rata Capaian Bulanan", `${monthlyAggs.length} bulan terhitung • otomatis dari Mingguan`));
+  summaryEl.appendChild(sumCard(monthlyAvg, "Rata-rata Capaian Bulanan", `${monthlyAggs.length} bulan terhitung • otomatis dari Mingguan`, noData));
 
   const yearlyDocs = scoped.filter(d => d.type === "yearly");
   const yearlyAvg = yearlyDocs.length ? Math.round(yearlyDocs.reduce((s,d)=>s+(Number(d.achieved)||0),0)/yearlyDocs.length) : 0;
-  summaryEl.appendChild(sumCard(yearlyAvg, "Rata-rata Capaian Tahunan", `${yearlyDocs.length} entri tercatat • ${edsScoreLabel(yearlyAvg)}`));
+  summaryEl.appendChild(sumCard(yearlyAvg, "Rata-rata Capaian Tahunan", `${yearlyDocs.length} entri tercatat • ${edsScoreLabel(yearlyAvg)}`, noData));
 
   const hsEl = document.getElementById("hsAvgPct");
   if (hsEl){
     // Ring header memakai gabungan Mingguan+Tahunan (sumber data asli),
     // tidak menghitung ulang Bulanan agar tidak menghitung dua kali.
     const base = scoped.filter(d => d.type === "weekly" || d.type === "yearly");
-    hsEl.textContent = base.length
-      ? Math.round(base.reduce((s,d)=>s+(Number(d.achieved)||0),0)/base.length) + "%"
-      : "\u2013%";
+    hsEl.textContent = (noData || !base.length)
+      ? "\u2013%"
+      : Math.round(base.reduce((s,d)=>s+(Number(d.achieved)||0),0)/base.length) + "%";
   }
   const lastEl = document.getElementById("lastUpdateGlobal");
   if(lastEl){
@@ -1077,6 +1241,145 @@ function renderSummary(){
       lastEl.style.display = "none";
     }
   }
+}
+
+// ====== KPI UTAMA (hero di bawah header) ======
+function kpiBoxHtml(val, label, dim){
+  return `<div class="kpi-box"><div class="kv${dim?" dim":""}">${val}</div><div class="kl">${label}</div></div>`;
+}
+function latestByKey(docs, keyFn){
+  const map = {};
+  docs.forEach(d => {
+    const k = keyFn(d);
+    if(!k) return;
+    if(!map[k] || (Number(d.updatedAt)||0) > (Number(map[k].updatedAt)||0)) map[k] = d;
+  });
+  return Object.values(map);
+}
+function computeProgramStatuses(){
+  const weekly = allDocs.filter(d => d.type === "weekly" && d.programId);
+  return latestByKey(weekly, d => d.programId === "lainnya" ? ("lainnya:" + (d.programCustomName || d.id)) : d.programId)
+    .map(d => ({ key: d.programId, label: programLabelOf(d), achieved: Number(d.achieved) || 0, target: Number(d.target) || 0, status: statusOf(d.achieved, d.target) }));
+}
+function computeSnpStatuses(){
+  const relevant = allDocs.filter(d => d.type === "yearly" && d.snp);
+  return latestByKey(relevant, d => d.snp).map(d => ({
+    key: d.snp, label: SNP_LABEL[d.snp] || d.snp,
+    achieved: Number(d.achieved) || 0, target: Number(d.target) || 0, status: statusOf(d.achieved, d.target),
+  }));
+}
+function renderKpiHero(){
+  const el = document.getElementById("kpiHero");
+  if(!el) return;
+  if(!hasLoadedOnce){
+    el.innerHTML = kpiBoxHtml("–", "Rata-rata Capaian", true) + kpiBoxHtml("–", "Target Tahun Ini", true) +
+      kpiBoxHtml("–", "Program Selesai", true) + kpiBoxHtml("–", "Perlu Perhatian", true);
+    return;
+  }
+  const base = getFilteredDocs().filter(d => d.type === "weekly" || d.type === "yearly");
+  const avgAchieved = base.length ? Math.round(base.reduce((s,d)=>s+(Number(d.achieved)||0),0)/base.length) : null;
+  const avgTarget = base.length ? Math.round(base.reduce((s,d)=>s+(Number(d.target)||0),0)/base.length) : null;
+  const progs = computeProgramStatuses().concat(computeSnpStatuses());
+  const total = progs.length;
+  const done = progs.filter(p => p.status.cls === "ok").length;
+  const danger = progs.filter(p => p.status.cls === "danger").length;
+  el.innerHTML =
+    kpiBoxHtml(avgAchieved===null ? "–" : avgAchieved+"%", "Rata-rata Capaian", avgAchieved===null) +
+    kpiBoxHtml(avgTarget===null ? "–" : avgTarget+"%", "Target Tahun Ini", avgTarget===null) +
+    kpiBoxHtml(total ? done+" / "+total : "–", "Program Selesai", !total) +
+    kpiBoxHtml(total ? String(danger) : "–", "Perlu Perhatian", !total);
+}
+
+// ====== POSISI SEKOLAH SAAT INI ======
+function currentSchoolYear(){ return schoolYearOf(todayIso()) || SCHOOL_YEAR_OPTIONS[0]; }
+function renderPositionCard(){
+  const el = document.getElementById("positionCard");
+  if(!el) return;
+  if(!hasLoadedOnce || !allDocs.length){ el.style.display = "none"; return; }
+  const cy = currentSchoolYear();
+  const phaseItem = document.querySelector('.roadmap-item[data-year="'+cy+'"]');
+  const phase = phaseItem ? phaseItem.dataset.phase : "—";
+  const docsThisYear = allDocs.filter(d => (d.schoolYear || schoolYearOf(d.periodDate)) === cy && (d.type==="weekly"||d.type==="yearly"));
+  if(!docsThisYear.length){ el.style.display = "none"; return; }
+  const achieved = Math.round(docsThisYear.reduce((s,d)=>s+(Number(d.achieved)||0),0)/docsThisYear.length);
+  const target = Math.round(docsThisYear.reduce((s,d)=>s+(Number(d.target)||0),0)/docsThisYear.length) || 85;
+  const gap = achieved - target;
+  const st = statusOf(achieved, target);
+  el.style.display = "block";
+  el.innerHTML = `
+    <div class="pc-eyebrow">Posisi Sekolah Saat Ini · Tahun Ajaran ${escapeHtml(cy)}</div>
+    <div class="pc-phase">Fase: ${escapeHtml(phase)}</div>
+    <div class="pc-bar"><div style="width:${Math.max(0,Math.min(100,achieved))}%"></div></div>
+    <div class="pc-row"><span>Progress Renstra</span><span>${achieved}%</span></div>
+    <div class="pc-stats">
+      <div class="pc-stat"><div class="n">${target}%</div><div class="l">Target Tahun Ini</div></div>
+      <div class="pc-stat"><div class="n">${gap>=0?"+":""}${gap}%</div><div class="l">Gap</div></div>
+      <div class="pc-stat"><div class="n">${docsThisYear.length}</div><div class="l">Entri Tercatat</div></div>
+    </div>
+    <div class="pc-status">${st.cls==="ok"?"🟢":st.cls==="warn"?"🟡":"🔴"} ${st.cls==="danger"?"Perlu percepatan":st.text}</div>
+  `;
+}
+
+// ====== PROGRESS PER FASE RENSTRA (roadmap) ======
+function renderRoadmapProgress(){
+  const cy = currentSchoolYear();
+  document.querySelectorAll('#roadmap .roadmap-item').forEach(item => {
+    const yr = item.dataset.year;
+    item.classList.toggle("current", yr === cy);
+    const ttl = item.querySelector(".ttl");
+    if(ttl && !ttl.dataset.tagged){
+      ttl.dataset.tagged = "1";
+      if(yr === cy) ttl.innerHTML = ttl.textContent + ' <span class="now-tag">Saat Ini</span>';
+    }
+    const box = item.querySelector(".rm-progress");
+    if(!box) return;
+    const docs = allDocs.filter(d => (d.schoolYear || schoolYearOf(d.periodDate)) === yr && (d.type==="weekly"||d.type==="yearly"));
+    if(!hasLoadedOnce || !docs.length){
+      const st = yr < cy ? "Belum ada data" : (yr === cy ? "Sedang berjalan" : "Belum dimulai");
+      box.innerHTML = `<div class="rm-label"><span>${st}</span><span>–</span></div><div class="rm-bar"><div style="width:0%;background:var(--line)"></div></div>`;
+      return;
+    }
+    const avg = Math.round(docs.reduce((s,d)=>s+(Number(d.achieved)||0),0)/docs.length);
+    box.innerHTML = `<div class="rm-label"><span>Progress</span><span>${avg}%</span></div><div class="rm-bar"><div style="width:${avg}%"></div></div>`;
+  });
+}
+
+// ====== 8 SNP: progress bar horizontal berbasis data Tahunan ======
+function renderSnpBars(){
+  const el = document.getElementById("snpBars");
+  if(!el) return;
+  const stats = computeSnpStatuses();
+  const core = SNP_OPTIONS.filter(o => ["SKL","Isi","Proses","PTK","Sarpras","Pengelolaan","Pembiayaan","Penilaian"].includes(o.v));
+  el.innerHTML = core.map(o => {
+    const s = stats.find(x => x.key === o.v);
+    const val = (hasLoadedOnce && s) ? s.achieved : null;
+    const cls = s ? s.status.cls : "muted";
+    return `<div class="snp-bar-row"><div class="sb-name">${escapeHtml(o.label.replace(/^\d+\.\s*/,""))}</div><div class="sb-track"><div class="${cls}" style="width:${val===null?0:Math.max(0,Math.min(100,val))}%"></div></div><div class="sb-val">${val===null?"–":val+"%"}</div></div>`;
+  }).join("");
+}
+
+// ====== TOP PRIORITAS PERBAIKAN (gap terbesar Target vs Capaian) ======
+function renderPriorities(){
+  const box = document.getElementById("priorityBox");
+  const list = document.getElementById("priorityList");
+  if(!box || !list) return;
+  if(!hasLoadedOnce){ box.style.display = "none"; return; }
+  const items = computeSnpStatuses().concat(computeProgramStatuses())
+    .map(x => ({ ...x, gap: (Number(x.target)||0) - (Number(x.achieved)||0) }))
+    .filter(x => x.gap > 0)
+    .sort((a,b) => b.gap - a.gap)
+    .slice(0, 5);
+  if(!items.length){ box.style.display = "none"; return; }
+  box.style.display = "block";
+  list.innerHTML = items.map((it,i) => `
+    <div class="priority-item">
+      <div class="pi-rank">${String(i+1).padStart(2,"0")}</div>
+      <div class="pi-body">
+        <div class="pi-title">${escapeHtml(it.label)}</div>
+        <div class="pi-meta"><span>Capaian ${it.achieved}%</span><span>Target ${it.target}%</span><span class="pi-gap">Gap -${it.gap}%</span></div>
+      </div>
+    </div>
+  `).join("");
 }
 
 function updateToolbarUI(){
@@ -1295,19 +1598,39 @@ const FAQ_ITEMS = [
   ["Apakah realisasi anggaran bisa dipantau di sini?", "Bisa, secara opsional. Pada formulir Tambah/Ubah Progres tersedia kolom Anggaran Direncanakan dan Anggaran Terealisasi. Kolom ini boleh dikosongkan untuk program yang tidak memiliki komponen anggaran tersendiri."],
 ];
 
+const FAQ_VISIBLE_COUNT = 3;
 function renderFaq(){
   const el = document.getElementById("faq");
   if(el.dataset.rendered) return;
   el.dataset.rendered = "1";
-  el.innerHTML = FAQ_ITEMS.map(([q,a]) => `
-    <details class="faq">
+  el.innerHTML = FAQ_ITEMS.map(([q,a], i) => `
+    <details class="faq${i >= FAQ_VISIBLE_COUNT ? " faq-hidden" : ""}" data-faq-idx="${i}">
       <summary>${escapeHtml(q)}</summary>
       <p>${escapeHtml(a)}</p>
     </details>
   `).join("");
+  const moreBtn = document.getElementById("faqMoreBtn");
+  if(moreBtn && FAQ_ITEMS.length > FAQ_VISIBLE_COUNT){
+    moreBtn.style.display = "block";
+    moreBtn.onclick = () => {
+      el.querySelectorAll(".faq-hidden").forEach(d => d.classList.remove("faq-hidden"));
+      moreBtn.style.display = "none";
+    };
+  }
 }
 
-function renderAll(){ renderSummary(); renderTrend(); renderList(); renderFaq(); }
+function renderAll(){
+  renderConnStatus();
+  renderKpiHero();
+  renderPositionCard();
+  renderRoadmapProgress();
+  renderSnpBars();
+  renderPriorities();
+  renderSummary();
+  renderTrend();
+  renderList();
+  renderFaq();
+}
 
 function setLabelInvalid(isInvalid){
   const labelField = document.getElementById("f_label_field");
