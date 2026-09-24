@@ -1000,6 +1000,9 @@ function formatDateTime(ts){
 // Aksi ini hanya tersedia bagi admin, sehingga alasan dari server boleh
 // ditampilkan; detail lengkap tetap dicatat ke console.
 function adminErrorMessage(action, err, maybeSaved){
+  return adminErrorBase(action, err, maybeSaved) + "\n\n[kode: " + ((err && err.kind) || "unknown") + " \u00b7 " + BUILD_ID + "]";
+}
+function adminErrorBase(action, err, maybeSaved){
   console.error("[" + action + "]", err);
   const kind = err && err.kind;
   const detail = err && (err.serverMessage || err.message) ? String(err.serverMessage || err.message) : "";
@@ -1156,6 +1159,8 @@ class ApiError extends Error {
     if(extra) Object.assign(this, extra);
   }
 }
+// Penanda versi berkas ini; ditampilkan pada pesan galat agar mudah dipastikan berkas mana yang sedang dimuat browser.
+const BUILD_ID = "r3c";
 const READ_TIMEOUT_MS = 30000;
 const WRITE_TIMEOUT_MS = 45000; // Apps Script bisa lambat saat "cold start"
 
@@ -2085,6 +2090,9 @@ document.getElementById("adminCancelBtn").onclick = closeAdminLogin;
 adminOverlay.addEventListener("click", (e) => { if(e.target === adminOverlay) closeAdminLogin(); });
 
 function loginErrorText(err){
+  return loginErrorBase(err) + " [kode: " + ((err && err.kind) || "unknown") + " \u00b7 " + BUILD_ID + "]";
+}
+function loginErrorBase(err){
   switch(err && err.kind){
     case "auth": return "Token salah. Periksa huruf besar/kecil dan spasi, lalu coba lagi.";
     case "config": return "Server belum dikonfigurasi: ADMIN_TOKEN belum diisi di Script Properties Apps Script.";
