@@ -768,13 +768,14 @@ details.faq p{font-size:13px;}
       </div>
       <div class="sub-hint" style="margin-top:8px">Isi hanya jika program ini memiliki komponen anggaran yang ingin dipantau bersamaan dengan progres fisik.</div>
     </div>
-    <label class="checkbox-field" for="f_verified">
+    <label class="checkbox-field" for="f_verified" id="f_verified_field">
       <input type="checkbox" id="f_verified" name="f_verified">
       <span>
         <div class="cf-label">Tandai sebagai Terverifikasi</div>
         <div class="cf-sub">Centang hanya setelah bukti/dokumen pendukung ditinjau dan dinyatakan sesuai. Jika isi progres diubah lagi setelah ini, status verifikasi akan otomatis kembali ke "Menunggu Verifikasi" agar tidak ada klaim yang tersisa tanpa peninjauan ulang.</div>
       </span>
     </label>
+    <div class="modal-lastinfo" id="f_verified_new_hint" style="display:none">⏳ Entri baru selalu dimulai dengan status <b>Menunggu Verifikasi</b>. Setelah entri ini disimpan, Anda dapat menandainya Terverifikasi melalui tombol "Ubah" atau "Verifikasi" pada kartu data.</div>
     <div class="modal-actions">
       <button class="btn ghost" id="cancelBtn">Batal</button>
       <button class="btn" id="deleteBtn" style="background:var(--danger);display:none">Hapus</button>
@@ -963,10 +964,16 @@ function renderYearFilterOptions(){
   const years = new Set();
   allDocs.forEach(d => { const y = d.schoolYear || schoolYearOf(d.periodDate); if(y) years.add(y); });
   const sorted = Array.from(years).sort().reverse();
-  const current = sel.value;
+  // activeSchoolYear adalah SUMBER KEBENARAN untuk filter (dipakai getFilteredDocs()).
+  // Bila tahun ajaran yang sedang aktif sudah tidak punya data lagi (mis. entri
+  // terakhirnya dihapus), reset ke "Semua Tahun Ajaran" di KEDUA sisi sekaligus.
+  // Sebelumnya hanya tampilan <select> yang direset sedangkan activeSchoolYear
+  // tetap memakai nilai lama, sehingga dropdown terlihat "Semua Tahun Ajaran"
+  // padahal data yang ditampilkan sebenarnya masih terfilter secara tersembunyi.
+  if(activeSchoolYear && !sorted.includes(activeSchoolYear)) activeSchoolYear = "";
   sel.innerHTML = `<option value="">Semua Tahun Ajaran</option>` +
     sorted.map(y => `<option value="${escapeHtml(y)}">${escapeHtml(y)}</option>`).join("");
-  if(sorted.includes(current)) sel.value = current;
+  sel.value = activeSchoolYear;
 }
 function getFilteredDocs(){
   if(!activeSchoolYear) return allDocs;
@@ -1666,7 +1673,7 @@ function renderList(){
     const isVerified = d.verified === true || d.verified === "true";
     const budgetTarget = Number(d.budgetTarget) || 0;
     const budgetRealized = Number(d.budgetRealized) || 0;
-    const budgetLine = budgetTarget > 0
+    const budgetLine = (budgetTarget > 0 || budgetRealized > 0)
       ? `<div class="budget-line">💰 <b>Anggaran:</b> ${formatRupiah(budgetRealized)} terealisasi dari rencana ${formatRupiah(budgetTarget)}</div>`
       : "";
     const card = document.createElement("div");
@@ -1938,6 +1945,12 @@ function openModal(doc){
   document.getElementById("f_budget_target").value = doc && Number(doc.budgetTarget) ? Number(doc.budgetTarget) : "";
   document.getElementById("f_budget_realized").value = doc && Number(doc.budgetRealized) ? Number(doc.budgetRealized) : "";
   document.getElementById("f_verified").checked = !!(doc && (doc.verified === true || doc.verified === "true"));
+  // Entri BARU: backend selalu memaksa verified=false apapun yang dikirim
+  // (lihat createEntry_ di Code.gs), jadi checkbox disembunyikan agar admin
+  // tidak mengira mencentangnya saat menambah data akan tersimpan sebagai
+  // Terverifikasi. Untuk entri yang sudah ada (Ubah), checkbox tetap tampil.
+  document.getElementById("f_verified_field").style.display = doc ? "flex" : "none";
+  document.getElementById("f_verified_new_hint").style.display = doc ? "none" : "block";
   document.getElementById("deleteBtn").style.display = doc ? "inline-block" : "none";
   const lastInfo = document.getElementById("modalLastInfo");
   if(doc && doc.updatedAt){
