@@ -12,8 +12,12 @@
   --navy:#0B3D91; --navy2:#0C3B87; --navy3:#0A2E6E; --gold:#D9A33D; --gold-dark:#B8862A; --gold-soft:#F0C878; --ice:#E7F0FD; --slate:#5A6480;
   --bg:#F4F6FB; --card:#FFFFFF; --text:#101B36; --muted:#5F6B8C; --line:#E3E8F4;
   --danger:#B4552F; --ok:#159D6C;
-  --c1:#12688A;--c2:#0E80A0;--c3:#1FAEC4;--c4:#128F63;--c5:#3AAE75;--c6:#8FC93F;
-  --c7:#F0923C;--c8:#F0AA3E;--c9:#E6C24A;--c10:#B93A2B;--c11:#D14B41;--c12:#C21C63;
+  /* 12 Area Kompetensi: 4 gugus x 3 gradasi, diturunkan dari palet navy/gold/ok/danger
+     yang sama dipakai di seluruh dashboard — bukan roda pelangi lepas dari identitas situs. */
+  --c1:#1B3A6B;--c2:#2C4F8C;--c3:#5675B5;   /* Kepemimpinan Diri & Relasi — keluarga navy */
+  --c4:#0E5A4E;--c5:#177E68;--c6:#3E9F83;   /* Pembelajaran & Budaya — keluarga hijau-tosca (var(--ok)) */
+  --c7:#B8862A;--c8:#D9A33D;--c9:#C9962E;   /* Layanan Murid & Operasional — keluarga gold */
+  --c10:#7C3A28;--c11:#B4552F;--c12:#C9825C; /* Strategi & Citra Kelembagaan — keluarga terakota (var(--danger)) */
   --font-body:'Plus Jakarta Sans',"Segoe UI",Calibri,Arial,sans-serif;
   --font-display:'Plus Jakarta Sans',"Segoe UI",Calibri,Arial,sans-serif;
   --shadow-sm:0 1px 2px rgba(11,32,74,.04), 0 1px 6px rgba(11,32,74,.03);
@@ -504,18 +508,28 @@ body.view-skill #skillProgressBar{display:block;}
 .sk-meta{margin-top:20px;display:flex;flex-wrap:wrap;gap:22px;}
 .sk-meta .m-label{display:block;font-size:10.5px;color:var(--muted);margin-bottom:3px;}
 .sk-meta .m-val{display:block;font-size:13px;font-weight:700;color:var(--text);}
-.sk-cover-wheel{width:200px;max-width:60%;margin:22px auto 0;}
-.sk-cover-wheel svg{width:100%;display:block;}
+.sk-cover-emblem{width:168px;max-width:52%;margin:26px auto 0;}
+.sk-cover-emblem svg{width:100%;display:block;}
+.sk-ce-ring{fill:none;stroke:var(--line);stroke-width:1.2;}
+.sk-ce-ring-inner{fill:none;stroke:var(--gold);stroke-width:1;stroke-dasharray:1.5 5;opacity:.5;}
+.sk-ce-tick{stroke-width:2.6;stroke-linecap:round;}
+.sk-ce-tick[data-c="1"],.sk-ce-tick[data-c="2"],.sk-ce-tick[data-c="3"]{stroke:var(--c2);}
+.sk-ce-tick[data-c="4"],.sk-ce-tick[data-c="5"],.sk-ce-tick[data-c="6"]{stroke:var(--c5);}
+.sk-ce-tick[data-c="7"],.sk-ce-tick[data-c="8"],.sk-ce-tick[data-c="9"]{stroke:var(--c8);}
+.sk-ce-tick[data-c="10"],.sk-ce-tick[data-c="11"],.sk-ce-tick[data-c="12"]{stroke:var(--c11);}
+.sk-ce-num{font-family:var(--font-display);font-size:34px;font-weight:800;fill:var(--navy);}
+:root[data-theme="dark"] .sk-ce-num{fill:var(--gold-soft);}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .sk-ce-num{fill:var(--gold-soft);}}
+.sk-ce-lbl{font-family:var(--font-display);font-size:9px;font-weight:700;letter-spacing:2px;fill:var(--muted);}
 
 .sk-section-head{padding:34px 0 14px;}
 .sk-section-head h3{font-family:var(--font-display);font-size:19px;font-weight:700;color:var(--text);margin:0;}
 .sk-section-head .sk-note{margin-top:7px;color:var(--muted);font-size:13px;line-height:1.65;max-width:60ch;}
 
-.sk-quad{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:16px 0 6px;}
-.sk-quad-chip{border:1px solid var(--line);border-radius:10px;padding:10px 11px;background:var(--card);}
-.sk-quad-chip .qc-range{font-size:10px;color:var(--muted);letter-spacing:.3px;}
-.sk-quad-chip .qc-name{font-size:12.5px;font-weight:700;margin-top:3px;color:var(--text);}
-.sk-quad-chip .qc-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;}
+.sk-quad{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0 6px;}
+.sk-quad-chip{border:1px solid var(--line);border-top:2.5px solid var(--qc,var(--gold));border-radius:9px;padding:11px 12px;background:var(--card);}
+.sk-quad-chip .qc-range{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;font-weight:700;}
+.sk-quad-chip .qc-name{font-size:13px;font-weight:700;margin-top:4px;color:var(--text);line-height:1.35;}
 
 .sk-explorer{padding:6px 0 10px;}
 .sk-wheel-sticky{position:sticky;top:8px;z-index:2;margin-bottom:18px;}
@@ -527,7 +541,7 @@ body.view-skill #skillProgressBar{display:block;}
 .sk-wheel-wrap{position:relative;width:230px;max-width:70%;margin:0 auto;aspect-ratio:1/1;}
 @media (min-width:860px){.sk-wheel-wrap{width:100%;max-width:100%;}}
 .sk-wheel-wrap svg{width:100%;height:100%;display:block;}
-.wseg{transition:opacity .35s ease,filter .35s ease;transform-box:fill-box;transform-origin:center;opacity:.55;}
+.wseg{transition:opacity .35s ease,filter .35s ease;transform-box:fill-box;transform-origin:center;opacity:.55;stroke:var(--bg);stroke-width:3;paint-order:stroke;}
 .wseg.active{opacity:1;filter:drop-shadow(0 3px 8px rgba(0,0,0,.25));}
 .sk-wheel-center{position:absolute;left:50%;top:50%;width:54%;height:54%;transform:translate(-50%,-50%);border-radius:50%;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow-md);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:12%;}
 .wc-num{font-family:var(--font-display);font-size:10.5px;color:var(--gold-dark);font-weight:700;letter-spacing:.5px;margin-bottom:5px;}
@@ -542,22 +556,25 @@ body.view-skill #skillProgressBar{display:block;}
 .sk-area-card{scroll-margin-top:16px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 19px;box-shadow:var(--shadow-sm);border-left:4px solid var(--seg,var(--gold));opacity:.6;transform:translateY(4px);transition:opacity .4s ease,transform .4s ease;}
 @media (min-width:860px){.sk-area-card{scroll-margin-top:90px;}}
 .sk-area-card.active{opacity:1;transform:translateY(0);box-shadow:var(--shadow-md);}
-.sk-ac-top{display:flex;align-items:baseline;gap:10px;margin-bottom:5px;}
-.sk-ac-num{font-family:var(--font-display);font-size:18px;font-weight:800;color:var(--seg,var(--gold));}
-.sk-ac-tag{font-size:10px;letter-spacing:.3px;color:var(--muted);font-weight:700;}
-.sk-area-card h4{font-family:var(--font-display);font-size:15.5px;font-weight:700;margin:0 0 8px;color:var(--text);}
-.sk-area-card p{color:var(--muted);font-size:13px;line-height:1.7;margin:0 0 8px;}
-.sk-ac-indic{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);}
-.sk-ac-indic-label{font-size:10px;font-weight:800;letter-spacing:.3px;color:var(--text);margin-bottom:7px;text-transform:uppercase;}
-.sk-ac-indic ul{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;}
-.sk-ac-indic li{font-size:12px;color:var(--muted);padding-left:14px;position:relative;line-height:1.5;}
-.sk-ac-indic li::before{content:"";position:absolute;left:0;top:6px;width:6px;height:6px;border-radius:50%;background:var(--seg,var(--gold));}
+.sk-ac-top{display:flex;align-items:baseline;gap:12px;margin-bottom:7px;}
+.sk-ac-num{font-family:var(--font-display);font-size:22px;font-weight:800;letter-spacing:-.5px;color:var(--seg,var(--gold));}
+.sk-ac-tag{font-size:10px;letter-spacing:1.1px;text-transform:uppercase;color:var(--muted);font-weight:700;}
+.sk-area-card h4{font-family:var(--font-display);font-size:16px;font-weight:700;letter-spacing:-.1px;margin:0 0 9px;color:var(--text);}
+.sk-area-card p{color:var(--muted);font-size:13.2px;line-height:1.75;margin:0 0 8px;}
+.sk-ac-insight{font-style:italic;color:var(--text);border-left:2.5px solid var(--seg,var(--gold));padding:1px 0 1px 14px;margin:12px 0 14px;font-size:13.5px;line-height:1.65;}
+.sk-ac-indic{margin-top:4px;padding-top:12px;border-top:1px solid var(--line);}
+.sk-ac-indic-label{font-size:10px;font-weight:800;letter-spacing:1.1px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;}
+.sk-ac-indic ul{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:7px 14px;}
+.sk-ac-indic li{font-size:12.2px;color:var(--muted);padding-left:14px;position:relative;line-height:1.5;}
+.sk-ac-indic li::before{content:"";position:absolute;left:0;top:6px;width:5px;height:5px;border-radius:50%;background:var(--seg,var(--gold));}
 
-.sk-table{width:100%;border-collapse:collapse;margin:12px 0 6px;font-size:12.5px;}
-.sk-table th{text-align:left;font-size:10px;letter-spacing:.3px;color:var(--muted);font-weight:800;padding:8px 10px;border-bottom:2px solid var(--line);text-transform:uppercase;}
-.sk-table td{padding:10px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--muted);}
+.sk-table{width:100%;border-collapse:collapse;margin:14px 0 6px;font-size:12.8px;}
+.sk-table th{text-align:left;font-size:10px;letter-spacing:1px;color:var(--muted);font-weight:800;padding:9px 10px;border-bottom:1.5px solid var(--text);text-transform:uppercase;}
+.sk-table td{padding:11px 10px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--muted);line-height:1.55;}
+.sk-table tr:last-child td{border-bottom:none;}
+.sk-table td:first-child{font-family:var(--font-display);font-weight:800;color:var(--muted);}
 .sk-table td.rt-name{color:var(--text);font-weight:700;}
-.sk-table .rt-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;}
+.sk-table .rt-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:8px;}
 
 .sk-closing{padding:6px 0 20px;}
 .sk-closing p{color:var(--muted);font-size:13.5px;line-height:1.75;max-width:70ch;margin:0 0 14px;}
@@ -800,20 +817,24 @@ body.view-skill #skillProgressBar{display:block;}
       <div><span class="m-label">Audiens</span><span class="m-val">Kepala sekolah & calon pemimpin satuan pendidikan</span></div>
       <div><span class="m-label">Disusun</span><span class="m-val">27 September 2026</span></div>
     </div>
-    <div class="sk-cover-wheel" aria-hidden="true">
-      <svg viewBox="0 0 500 500">
-        <path d="M250,10 A240,240 0 0 1 370,42.15 L320,128.76 A140,140 0 0 0 250,110 Z" fill="var(--c1)"/>
-        <path d="M370,42.15 A240,240 0 0 1 457.85,130 L371.24,180 A140,140 0 0 0 320,128.76 Z" fill="var(--c2)"/>
-        <path d="M457.85,130 A240,240 0 0 1 490,250 L390,250 A140,140 0 0 0 371.24,180 Z" fill="var(--c3)"/>
-        <path d="M490,250 A240,240 0 0 1 457.85,370 L371.24,320 A140,140 0 0 0 390,250 Z" fill="var(--c4)"/>
-        <path d="M457.85,370 A240,240 0 0 1 370,457.85 L320,371.24 A140,140 0 0 0 371.24,320 Z" fill="var(--c5)"/>
-        <path d="M370,457.85 A240,240 0 0 1 250,490 L250,390 A140,140 0 0 0 320,371.24 Z" fill="var(--c6)"/>
-        <path d="M250,490 A240,240 0 0 1 130,457.85 L180,371.24 A140,140 0 0 0 250,390 Z" fill="var(--c7)"/>
-        <path d="M130,457.85 A240,240 0 0 1 42.15,370 L128.76,320 A140,140 0 0 0 180,371.24 Z" fill="var(--c8)"/>
-        <path d="M42.15,370 A240,240 0 0 1 10,250 L110,250 A140,140 0 0 0 128.76,320 Z" fill="var(--c9)"/>
-        <path d="M10,250 A240,240 0 0 1 42.15,130 L128.76,180 A140,140 0 0 0 110,250 Z" fill="var(--c10)"/>
-        <path d="M42.15,130 A240,240 0 0 1 130,42.15 L180,128.76 A140,140 0 0 0 128.76,180 Z" fill="var(--c11)"/>
-        <path d="M130,42.15 A240,240 0 0 1 250,10 L250,110 A140,140 0 0 0 180,128.76 Z" fill="var(--c12)"/>
+    <div class="sk-cover-emblem" aria-hidden="true">
+      <svg viewBox="0 0 200 200">
+        <circle class="sk-ce-ring" cx="100" cy="100" r="86"/>
+        <circle class="sk-ce-ring-inner" cx="100" cy="100" r="70"/>
+        <line class="sk-ce-tick" data-c="1"  x1="100.0" y1="26.0" x2="100.0" y2="14.0"/>
+        <line class="sk-ce-tick" data-c="2"  x1="137.0" y1="35.9" x2="143.0" y2="25.5"/>
+        <line class="sk-ce-tick" data-c="3"  x1="164.1" y1="63.0" x2="174.5" y2="57.0"/>
+        <line class="sk-ce-tick" data-c="4"  x1="174.0" y1="100.0" x2="186.0" y2="100.0"/>
+        <line class="sk-ce-tick" data-c="5"  x1="164.1" y1="137.0" x2="174.5" y2="143.0"/>
+        <line class="sk-ce-tick" data-c="6"  x1="137.0" y1="164.1" x2="143.0" y2="174.5"/>
+        <line class="sk-ce-tick" data-c="7"  x1="100.0" y1="174.0" x2="100.0" y2="186.0"/>
+        <line class="sk-ce-tick" data-c="8"  x1="63.0" y1="164.1" x2="57.0" y2="174.5"/>
+        <line class="sk-ce-tick" data-c="9"  x1="35.9" y1="137.0" x2="25.5" y2="143.0"/>
+        <line class="sk-ce-tick" data-c="10" x1="26.0" y1="100.0" x2="14.0" y2="100.0"/>
+        <line class="sk-ce-tick" data-c="11" x1="35.9" y1="63.0" x2="25.5" y2="57.0"/>
+        <line class="sk-ce-tick" data-c="12" x1="63.0" y1="35.9" x2="57.0" y2="25.5"/>
+        <text x="100" y="94" class="sk-ce-num" text-anchor="middle">12</text>
+        <text x="100" y="118" class="sk-ce-lbl" text-anchor="middle">AREA</text>
       </svg>
     </div>
     <button class="btn gold sm sk-print-btn" onclick="setTimeout(()=>window.print(),50)">🖨️ Unduh / Cetak Bagian Ini</button>
@@ -823,10 +844,10 @@ body.view-skill #skillProgressBar{display:block;}
     <h3>Ringkasan eksekutif</h3>
     <p class="sk-note">Kerangka ini mengelompokkan dua belas area ke dalam empat gugus kompetensi. Mutu sekolah tumbuh ketika keempatnya berkembang berimbang — kepemimpinan yang kuat pada satu sisi saja cenderung menghasilkan sekolah yang timpang.</p>
     <div class="sk-quad">
-      <div class="sk-quad-chip"><span class="qc-range">Area 1–3</span><div class="qc-name"><span class="qc-dot" style="background:var(--c2)"></span>Kepemimpinan Diri & Relasi</div></div>
-      <div class="sk-quad-chip"><span class="qc-range">Area 4–6</span><div class="qc-name"><span class="qc-dot" style="background:var(--c5)"></span>Pembelajaran & Budaya</div></div>
-      <div class="sk-quad-chip"><span class="qc-range">Area 7–9</span><div class="qc-name"><span class="qc-dot" style="background:var(--c8)"></span>Layanan Murid & Operasional</div></div>
-      <div class="sk-quad-chip"><span class="qc-range">Area 10–12</span><div class="qc-name"><span class="qc-dot" style="background:var(--c11)"></span>Strategi & Citra Kelembagaan</div></div>
+      <div class="sk-quad-chip" style="--qc:var(--c2)"><span class="qc-range">Area 1–3</span><div class="qc-name">Kepemimpinan Diri & Relasi</div></div>
+      <div class="sk-quad-chip" style="--qc:var(--c5)"><span class="qc-range">Area 4–6</span><div class="qc-name">Pembelajaran & Budaya</div></div>
+      <div class="sk-quad-chip" style="--qc:var(--c8)"><span class="qc-range">Area 7–9</span><div class="qc-name">Layanan Murid & Operasional</div></div>
+      <div class="sk-quad-chip" style="--qc:var(--c11)"><span class="qc-range">Area 10–12</span><div class="qc-name">Strategi & Citra Kelembagaan</div></div>
     </div>
   </div>
 
@@ -2522,40 +2543,40 @@ init();
    ============================================================ */
 const SKILL_AREAS = [
   {n:1,title:"Pengembangan Kompetensi Warga Sekolah",tag:"Kepemimpinan Diri & Relasi",c:"var(--c1)",
-   p1:"Upaya sistematis kepala sekolah dalam meningkatkan kapasitas guru, tenaga kependidikan, dan murid melalui pelatihan, pendampingan (coaching), dan budaya belajar berkelanjutan.",
-   p2:"Mutu sebuah sekolah tidak pernah melampaui mutu orang-orang yang menjalankannya — investasi pada manusia adalah investasi jangka panjang paling menentukan.",
+   p1:"Upaya sistematis kepala sekolah membangun kapasitas guru, tenaga kependidikan, dan murid melalui pelatihan terarah, pendampingan (coaching), dan budaya belajar yang tidak pernah berhenti.",
+   p2:"Mutu sekolah tidak pernah melampaui mutu orang yang menjalankannya.",
    ind:["Program pengembangan profesional guru terjadwal","Sistem coaching & supervisi akademik","Budaya berbagi praktik baik antarguru","Jalur pengembangan karier tenaga kependidikan"]},
   {n:2,title:"Jejaring & Organisasi",tag:"Kepemimpinan Diri & Relasi",c:"var(--c2)",
-   p1:"Kemampuan membangun dan memelihara relasi strategis dengan dinas pendidikan, komite sekolah, dunia usaha/industri, alumni, serta komunitas pendidikan lain.",
-   p2:"Sekolah unggul jarang berdiri sendiri; kolaborasi eksternal membuka akses sumber daya, keahlian, dan peluang yang tidak tersedia di dalam sekolah.",
+   p1:"Kemampuan membangun dan merawat relasi strategis dengan dinas pendidikan, komite sekolah, dunia usaha/industri, alumni, serta komunitas pendidikan lain.",
+   p2:"Sekolah unggul jarang berdiri sendiri; jejaring membuka pintu yang tak bisa dibuka sekolah seorang diri.",
    ind:["Kerja sama aktif dengan mitra & dunia industri","Komite sekolah yang terlibat nyata","Partisipasi dalam forum profesi kepala sekolah","Program magang atau kunjungan belajar antarsekolah"]},
   {n:3,title:"Kedewasaan Pribadi",tag:"Kepemimpinan Diri & Relasi",c:"var(--c3)",
-   p1:"Kematangan emosi, integritas, dan ketahanan mental kepala sekolah dalam mengambil keputusan serta menghadapi tekanan pekerjaan sehari-hari.",
-   p2:"Kepala sekolah adalah teladan yang terus-menerus diamati; stabilitas emosinya ikut membentuk iklim kerja seluruh warga sekolah.",
+   p1:"Kematangan emosi, integritas, dan ketahanan mental kepala sekolah dalam mengambil keputusan serta menghadapi tekanan kerja sehari-hari.",
+   p2:"Kepala sekolah adalah teladan yang terus-menerus diamati; kestabilannya membentuk iklim kerja seluruh warga sekolah.",
    ind:["Pengelolaan konflik secara konstruktif","Konsistensi antara ucapan dan tindakan","Keterbukaan menerima umpan balik","Keseimbangan kerja dan kehidupan pribadi yang sehat"]},
   {n:4,title:"Kurikulum Operasional Sekolah",tag:"Pembelajaran & Budaya",c:"var(--c4)",
    p1:"Perancangan, pelaksanaan, dan evaluasi kurikulum yang kontekstual dengan karakteristik murid dan kebutuhan lokal, mengacu pada kerangka Kurikulum Merdeka.",
-   p2:"Kurikulum yang relevan dan hidup — bukan dokumen yang hanya disimpan — adalah fondasi bagi pembelajaran yang bermakna.",
+   p2:"Kurikulum yang hidup — bukan sekadar dokumen tersimpan — adalah fondasi pembelajaran yang bermakna.",
    ind:["Dokumen KOS yang diperbarui secara berkala","Keselarasan capaian pembelajaran dengan asesmen","Ruang pembelajaran berdiferensiasi","Evaluasi kurikulum yang rutin dilakukan"]},
   {n:5,title:"Membentuk Budaya Sekolah",tag:"Pembelajaran & Budaya",c:"var(--c5)",
    p1:"Menumbuhkan nilai, norma, kebiasaan, dan iklim sekolah yang positif, aman, inklusif, dan berpihak pada murid.",
-   p2:"Budaya sekolah adalah cara warga sekolah bertindak sehari-hari — bentuknya jauh lebih kuat memengaruhi perilaku dibanding sekadar aturan tertulis.",
+   p2:"Budaya adalah cara warga sekolah bertindak sehari-hari — jauh lebih kuat membentuk perilaku dibanding aturan tertulis.",
    ind:["Kebijakan anti-perundungan yang benar-benar berjalan","Murid dilibatkan dalam keputusan sekolah","Tradisi sekolah yang memperkuat identitas bersama","Iklim kerja yang kolaboratif antarguru"]},
   {n:6,title:"Teknologi & Inovasi Pembelajaran",tag:"Pembelajaran & Budaya",c:"var(--c6)",
    p1:"Pemanfaatan teknologi digital dan pendekatan inovatif untuk memperkaya proses belajar-mengajar serta meningkatkan efisiensi manajemen sekolah.",
-   p2:"Literasi digital kini menjadi keterampilan dasar; teknologi yang dikelola dengan tepat mempercepat personalisasi pembelajaran bagi tiap murid.",
+   p2:"Teknologi yang dikelola dengan tepat mempercepat personalisasi pembelajaran bagi setiap murid.",
    ind:["Pemanfaatan platform pembelajaran digital","Pelatihan literasi digital untuk guru","Data sekolah dipakai untuk pengambilan keputusan","Ruang eksperimentasi metode mengajar baru"]},
   {n:7,title:"Program Sekolah yang Berorientasi pada Murid",tag:"Layanan Murid & Operasional",c:"var(--c7)",
-   p1:"Merancang program dan kebijakan sekolah dengan pertanyaan utama: apa dampaknya bagi murid — bukan sekadar memenuhi kelengkapan administrasi.",
-   p2:"Prinsip ini menjaga agar setiap inisiatif sekolah tetap kembali pada tujuan inti: tumbuh kembang dan hasil belajar murid.",
+   p1:"Merancang program dan kebijakan sekolah dengan satu pertanyaan utama: apa dampaknya bagi murid — bukan sekadar memenuhi kelengkapan administrasi.",
+   p2:"Prinsip ini menjaga setiap inisiatif sekolah tetap kembali pada tujuan intinya: tumbuh kembang dan hasil belajar murid.",
    ind:["Survei kebutuhan & kepuasan murid secara rutin","Program disesuaikan dengan profil belajar siswa","Ruang aspirasi murid yang aktif digunakan","Evaluasi program berbasis dampak pada murid"]},
   {n:8,title:"Manajemen Operasional",tag:"Layanan Murid & Operasional",c:"var(--c8)",
    p1:"Pengelolaan proses harian sekolah — sarana-prasarana, jadwal, dan administrasi — agar berjalan efisien, tertib, dan dapat diandalkan.",
-   p2:"Operasional yang rapi membebaskan energi sekolah untuk fokus pada mutu pembelajaran, bukan terus-menerus memadamkan masalah teknis.",
+   p2:"Operasional yang rapi membebaskan energi sekolah untuk fokus pada mutu pembelajaran, bukan memadamkan masalah teknis setiap hari.",
    ind:["SOP operasional yang terdokumentasi","Pemeliharaan sarana-prasarana terjadwal","Administrasi sekolah yang tertata rapi","Alur komunikasi internal yang jelas"]},
   {n:9,title:"Manajemen Finansial",tag:"Layanan Murid & Operasional",c:"var(--c9)",
    p1:"Perencanaan, penganggaran, dan pengelolaan keuangan sekolah secara transparan, akuntabel, dan tepat sasaran.",
-   p2:"Keputusan pedagogis yang baik memerlukan dukungan anggaran yang sehat dan dikelola dengan disiplin, bukan sekadar mengikuti kebiasaan tahun sebelumnya.",
+   p2:"Keputusan pedagogis yang baik memerlukan anggaran yang sehat dan dikelola disiplin — bukan sekadar mengikuti kebiasaan tahun sebelumnya.",
    ind:["RKAS yang realistis dan berbasis prioritas mutu","Laporan keuangan yang transparan dan berkala","Sumber pendanaan yang terdiversifikasi","Belanja sekolah sesuai skala prioritas"]},
   {n:10,title:"Perencanaan Strategis",tag:"Strategi & Citra Kelembagaan",c:"var(--c10)",
    p1:"Menyusun arah jangka menengah-panjang sekolah — visi, misi, Renstra, dan RKT — berbasis data dan evaluasi diri sekolah.",
@@ -2563,11 +2584,11 @@ const SKILL_AREAS = [
    ind:["Renstra & RKT selaras dengan rapor pendidikan","Target dan indikator kinerja yang terukur","Evaluasi capaian dilakukan secara berkala","Warga sekolah dilibatkan dalam perumusan strategi"]},
   {n:11,title:"Branding Sekolah & PPDB",tag:"Strategi & Citra Kelembagaan",c:"var(--c11)",
    p1:"Membangun citra dan identitas khas sekolah yang membedakannya, serta mengelola strategi penerimaan peserta didik baru secara efektif.",
-   p2:"Sekolah dengan citra dan keunggulan yang jelas lebih mudah menarik minat calon murid sekaligus kepercayaan masyarakat sekitarnya.",
+   p2:"Sekolah dengan citra dan keunggulan yang jelas lebih mudah menarik minat calon murid sekaligus kepercayaan masyarakat.",
    ind:["Identitas & keunggulan sekolah yang konsisten","Strategi PPDB yang direncanakan matang","Jejak prestasi alumni yang dikelola baik","Kehadiran sekolah di ruang publik dan digital"]},
   {n:12,title:"Marketing & Komunikasi Sekolah",tag:"Strategi & Citra Kelembagaan",c:"var(--c12)",
    p1:"Strategi komunikasi terarah untuk menyampaikan program, prestasi, dan nilai sekolah kepada orang tua, masyarakat, dan pemangku kepentingan.",
-   p2:"Komunikasi yang konsisten membangun kepercayaan publik dan dukungan berkelanjutan terhadap setiap program yang dijalankan sekolah.",
+   p2:"Komunikasi yang konsisten membangun kepercayaan publik dan dukungan berkelanjutan bagi setiap program sekolah.",
    ind:["Kalender konten & publikasi yang rutin","Media sosial dan situs sekolah terkelola aktif","Capaian sekolah dikomunikasikan ke orang tua","Kanal umpan balik dua arah dengan masyarakat"]},
 ];
 
@@ -2600,7 +2621,7 @@ const SKILL_BADGE_POS = {
       <div class="sk-ac-top"><span class="sk-ac-num">${String(a.n).padStart(2,"0")}</span><span class="sk-ac-tag">${a.tag}</span></div>
       <h4>${a.title}</h4>
       <p>${a.p1}</p>
-      <p>${a.p2}</p>
+      <p class="sk-ac-insight">${a.p2}</p>
       <div class="sk-ac-indic">
         <div class="sk-ac-indic-label">Indikator kunci</div>
         <ul>${a.ind.map(i=>`<li>${i}</li>`).join("")}</ul>
